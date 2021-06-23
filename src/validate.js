@@ -1,12 +1,10 @@
 import * as yup from 'yup';
 
-export default (url, urls) => {
+export default (value) => {
   const schema = yup.string()
-    .required()
-    .url()
-    .notOneOf(urls);
+    .required();
   try {
-    schema.validateSync(url);
+    schema.validateSync(value);
     return null;
   } catch (err) {
     return err.errors[0];

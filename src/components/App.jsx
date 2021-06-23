@@ -1,91 +1,81 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link,
+  Redirect,
 } from 'react-router-dom';
-import { Formik } from 'formik';
-import validate from '../validate.js';
+import authContext from '../contexts/index.jsx';
+import useAuth from '../hooks/index.jsx';
+import Login from './Login.jsx';
 
-const Home = () => <h2>Home</h2>;
-
-const Login = () => (
+const NotFound = () => (
   <div>
-    <Formik
-      initialValues={{ userName: '', password: '' }}
-      validate={(values) => validate(values)}
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          setSubmitting(false);
-        }, 400);
-      }}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        isSubmitting,
-        /* and other goodies */
-      }) => (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="userName"
-            name="userName"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.userName}
-          />
-          {errors.userName && touched.userName && errors.userName}
-          <input
-            type="password"
-            name="password"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.password}
-          />
-          {errors.password && touched.password && errors.password}
-          <button type="submit" disabled={isSubmitting}>
-            Submit
-          </button>
-        </form>
-      )}
-    </Formik>
+    <h3>
+      Not Found
+    </h3>
   </div>
 );
 
-const NotFound = () => <h2>404 (not found)</h2>;
+const AuthProvider = ({ children }) => {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const logIn = () => setLoggedIn(true);
+  const logOut = () => {
+    localStorage.removeItem('userId');
+    setLoggedIn(false);
+  };
+
+  return (
+    <authContext.Provider value={{ loggedIn, logIn, logOut }}>
+      {children}
+    </authContext.Provider>
+  );
+};
+
+const Home = ({ children, path }) => {
+  const auth = useAuth();
+
+  return (
+    <Route
+      path={path}
+      render={({ location }) => (auth.loggedIn
+        ? children
+        : <Redirect to={{ pathname: '/login', state: { from: location } }} />)}
+    />
+  );
+};
 
 export default function App() {
   return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-          </ul>
-        </nav>
+    <AuthProvider>
+      <Router>
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">/</Link>
+              </li>
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+            </ul>
+          </nav>
 
-        <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-          <Route path="*">
-            <NotFound />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+          <Switch>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/">
+              <Home />
+            </Route>
+            <Route path="*">
+              <NotFound />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
