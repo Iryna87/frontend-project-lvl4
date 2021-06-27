@@ -9,14 +9,8 @@ import {
 import authContext from '../contexts/index.jsx';
 import useAuth from '../hooks/index.jsx';
 import Login from './Login.jsx';
-
-const NotFound = () => (
-  <div>
-    <h3>
-      Not Found
-    </h3>
-  </div>
-);
+import Home from './Home.jsx';
+import NotFound from './NotFound.jsx';
 
 const AuthProvider = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -34,15 +28,15 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-const Home = ({ children, path }) => {
+const PrivateRoute = ({ children, path }) => {
   const auth = useAuth();
-
   return (
     <Route
       path={path}
-      render={({ location }) => (auth.loggedIn
-        ? children
-        : <Redirect to={{ pathname: '/login', state: { from: location } }} />)}
+      render={({ location }) => {
+        console.log(location, auth, auth.loggedIn, localStorage);
+        return auth.loggedIn ? children : <Redirect to={{ pathname: '/login' }} />;
+      }}
     />
   );
 };
@@ -67,9 +61,9 @@ export default function App() {
             <Route path="/login">
               <Login />
             </Route>
-            <Route path="/">
+            <PrivateRoute path="/">
               <Home />
-            </Route>
+            </PrivateRoute>
             <Route path="*">
               <NotFound />
             </Route>
