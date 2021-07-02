@@ -6,6 +6,7 @@ import {
   Link,
   Redirect,
 } from 'react-router-dom';
+import { Nav } from 'react-bootstrap';
 import authContext from '../contexts/index.jsx';
 import useAuth from '../hooks/index.jsx';
 import Login from './Login.jsx';
@@ -13,7 +14,8 @@ import Home from './Home.jsx';
 import NotFound from './NotFound.jsx';
 
 const AuthProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const token = !!localStorage.userId;
+  const [loggedIn, setLoggedIn] = useState(token);
 
   const logIn = () => setLoggedIn(true);
   const logOut = () => {
@@ -45,17 +47,17 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <div>
-          <nav>
+        <div className="d-flex flex-column h-100">
+          <Nav className="mr-auto">
             <ul>
               <li>
-                <Link to="/">/</Link>
+                <Nav.Link as={Link} to="/">/</Nav.Link>
               </li>
               <li>
-                <Link to="/login">Login</Link>
+                <Nav.Link as={Link} to="/login">Login</Nav.Link>
               </li>
             </ul>
-          </nav>
+          </Nav>
 
           <Switch>
             <Route path="/login">
