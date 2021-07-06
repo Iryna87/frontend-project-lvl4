@@ -7,9 +7,9 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import { reducer as formReducer } from 'redux-form';
 import App from './components/App.jsx';
-import * as reducers from './components/reducers.jsx';
+import reducer from './components/reducers.jsx';
+import { fetchChannels } from './components/actions.jsx';
 
 const middleware = getDefaultMiddleware({
   immutableCheck: false,
@@ -18,10 +18,12 @@ const middleware = getDefaultMiddleware({
 });
 
 const store = configureStore({
-  reducer: { ...reducers, formReducer },
+  reducer,
   middleware,
   devTools: process.env.NODE_ENV !== 'production',
 });
+
+store.dispatch(fetchChannels());
 
 ReactDOM.render(
   <Provider store={store}>
