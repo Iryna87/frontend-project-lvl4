@@ -22,34 +22,28 @@ export const changeId = (id) => async (dispatch) => {
 };
 
 export const addChannel = (channel) => async (dispatch) => {
-  const response = await axios.post(routes.channelPath(), { channel });
-  dispatch(addChannelSuccess({ channel: response.data }));
+  dispatch(addChannelSuccess({ channel }));
 };
 export const addMessage = ({ message }) => async (dispatch) => {
-  const response = await axios.post(routes.tasksUrl(), { message });
-  dispatch(addMessageSuccess({ message: response.data }));
+  dispatch(addMessageSuccess({ message }));
 };
 
-export const removeMessage = (task) => async (dispatch) => {
-  dispatch(removeMessageRequest());
+export const removeChannel = ({ id }) => async (dispatch) => {
+  dispatch(removeChannelRequest());
   try {
-    const url = routes.taskUrl(task.id);
-    await axios.delete(url);
-    dispatch(removeMessageSuccess({ id: task.id }));
+    dispatch(removeChannelSuccess({ id }));
   } catch (e) {
-    dispatch(removeMessageFailure());
+    dispatch(removeChannelFailure());
     throw e;
   }
 };
 
-export const removeChannel = (channel) => async (dispatch) => {
-  dispatch(removeChannelRequest());
+export const removeMessage = ({ id }) => async (dispatch) => {
+  dispatch(removeMessageRequest());
   try {
-    const url = routes.taskUrl(channel.id);
-    await axios.delete(url);
-    dispatch(removeChannelSuccess({ id: channel.id }));
+    dispatch(removeMessageSuccess({ id }));
   } catch (e) {
-    dispatch(removeChannelFailure());
+    dispatch(removeMessageFailure());
     throw e;
   }
 };

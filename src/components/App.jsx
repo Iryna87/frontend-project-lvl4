@@ -31,19 +31,17 @@ const AuthProvider = ({ children }) => {
 };
 
 const PrivateRoute = ({ children, path }) => {
+  //console.log(localStorage);
   const auth = useAuth();
   return (
     <Route
       path={path}
-      render={({ location }) => {
-        console.log(location, auth, auth.loggedIn, localStorage);
-        return auth.loggedIn ? children : <Redirect to={{ pathname: '/login' }} />;
-      }}
+      render={() => auth.loggedIn ? children : <Redirect to={{ pathname: '/login' }} />}
     />
   );
 };
 
-export default function App() {
+export default function App({ socket }) {
   return (
     <AuthProvider>
       <Router>
@@ -64,7 +62,7 @@ export default function App() {
               <Login />
             </Route>
             <PrivateRoute path="/">
-              <Home />
+              <Home socket={socket} />
             </PrivateRoute>
             <Route path="*">
               <NotFound />

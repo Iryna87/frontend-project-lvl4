@@ -40,33 +40,26 @@ const channelRemovingState = handleActions({
 }, 'none');
 
 const messages = handleActions({
+  [actions.fetchChannelsSuccess](state, { payload }) {
+    return payload.data.messages;
+  },
   [actions.addMessageSuccess](state, { payload: { message } }) {
-    const { byCurrentChannelId, allIds } = state;
-    return {
-      byCurrentChannelId: { ...byCurrentChannelId, [message.id]: message },
-      allIds: [message.id, ...allIds],
-    };
+    return [...state, message];
   },
   [actions.removeMessageSuccess](state, { payload: { id } }) {
-    const { byCurrentChannelId, allIds } = state;
-    return {
-      byCurrentChannelId: _.omit(byCurrentChannelId, id),
-      allIds: _.without(allIds, id),
-    };
+    return state.filter((message) => message.channelId !== id);
   },
-}, {
-  messages: [], byCurrentChannelId: {}, allIds: [],
-});
+}, []);
 
 const channels = handleActions({
   [actions.fetchChannelsSuccess](state, { payload }) {
     return payload.data.channels;
   },
   [actions.addChannelSuccess](state, { payload: { channel } }) {
-    return { ...channels, [channel.id]: channel };
+    return [...state, channel];
   },
   [actions.removeChannelSuccess](state, { payload: { id } }) {
-    return _.omit(channels, id);
+    return state.filter((channel) => channel.id !== id);
   },
 }, []);
 

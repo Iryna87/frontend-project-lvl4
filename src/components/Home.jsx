@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import _ from 'lodash';
+import { Modal, Form } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import * as actions from './actions.jsx';
 
@@ -7,7 +9,7 @@ const mapStateToProps = (state) => {
     state,
     channels: state.channels,
     currentId: state.currentId,
-    messages: state.messages.messages,
+    messages: state.messages,
   };
   return props;
 };
@@ -15,6 +17,7 @@ const mapStateToProps = (state) => {
 const actionCreators = {
   addChannel: actions.addChannel,
   addMessage: actions.addMessage,
+  removeChannel: actions.removeChannel,
   changeId: actions.changeId,
 };
 
@@ -23,73 +26,161 @@ const Home = ({
   currentId,
   messages,
   state,
-  addChannel,
   changeId,
+  socket,
 }) => {
+  console.log('state', state);
+
+  const [show, setShow] = useState(false);
+  const [show1, setShow1] = useState(false);
+  const [show2, setShow2] = useState(false);
+  const [show3, setShow3] = useState(false);
+  //const [isDisabled, setDisabled] = useState(false);
+  const isDisabled = false;
+
+  //const handleAbled = setDisabled(false);
+  //const handleDisabled = setDisabled(true);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const handleClose1 = () => setShow1(false);
+  const handleShow1 = () => setShow1(true);
+  const handleClose2 = () => setShow2(false);
+  const handleShow2 = () => setShow2(true);
+  const handleClose3 = () => setShow3(false);
+  const handleShow3 = () => setShow3(true);
+
+  const names = channels.map(({ name }) => name);
+
   const addNewChannel = async (e) => {
     e.preventDefault();
     const { name } = Object.fromEntries(new FormData(e.target));
-    console.log(name);
-    try {
-      await addChannel(name);
+    const differenses = names.filter((item) => item === name);
+    if (differenses.length > 0) {
+      throw new Error('This name alleready exists');
+    } else {
+      try {
+      await socket.emit("newChannel", { name });
     } catch (err) {
-      console.log(err);
+      throw new Error();
+    }
+    }
+  };
+
+  const removeNewChannel = async (e) => {
+    e.preventDefault();
+    const result = channels.filter(({ id }) => id === currentId );
+    const { id , removable } = result[0];
+    if (removable !== true) {
+      throw new Error('This channel is not removable');
+    } else {
+      try {
+      await socket.emit("removeChannel", { id });
+    } catch (err) {
+      throw new Error();
+    }
+    }
+  };
+
+  const addNewMessage = async (e) => {
+    e.preventDefault();
+    const obj = new FormData(e.target);
+    const body = obj.get('body');
+    try {
+      await socket.emit("newMessage", { body, channelId: currentId });
+    } catch (err) {
       throw new Error();
     }
   };
 
   const changeCurrentId = async (e) => {
     const { id } = e.target.dataset;
-    console.log(id);
-    try {
-      await changeId(id);
-    } catch (err) {
+    if (!id) {
       throw new Error();
+    } else {
+      try {
+        await changeId(parseInt(id, 10));
+      } catch (err) {
+        throw new Error();
+      }
     }
   };
 
-  const currentNameArr = channels?.filter((channel) => channel.id === parseInt(currentId, 10));
-
-  const messagesLengthArr = messages?.filter((message) => message.id === parseInt(currentId, 10));
-
-  const changeModalModus = () => {
-    const container = document.querySelector('.container-lg');
-    const modal = document.querySelector('#modal');
-    const dialog = document.querySelector('#dialog');
-    modal.classList.add('show');
-    dialog.classList.remove('fade');
-    dialog.classList.remove('modal');
-    dialog.classList.remove('show');
-    container.setAttribute('aria-hidden', 'true');
+  const func1 = (e) => {
+    changeCurrentId(e);
+    handleShow1();
   };
 
-  console.log('channels', channels, state);
+  const func3 = (e) => {
+    handleClose1();
+    handleClose3();
+    removeNewChannel(e);
+  };
+
+  const currentNameArr = Array.isArray(channels) ? channels?.filter((channel) => channel.id === parseInt(currentId, 10)) : '';
+
+  const messagesLengthArr = messages?.filter((message) => parseInt(message.currentId, 10) === currentId);
 
   return (
     <>
-      <div id="modal" className="modal fade" />
-      <div role="dialog" id="dialog" aria-modal="true" className="fade modal show" tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <div className="modal-title h4">Добавить канал</div>
-              <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
+      <Modal show={show} onHide={handleClose1}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <div className="modal-title h4">Добавить канал</div>
+            <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body onSubmit={addNewChannel}>
+          <Form>
+            <div className="form-group">
+              <input name="name" data-testid="add-channel" className="mb-2 form-control" />
+              <div className="invalid-feedback" />
             </div>
-            <div className="modal-body">
-              <form className="" onSubmit={addNewChannel}>
-                <div className="form-group">
-                  <input name="name" data-testid="add-channel" className="mb-2 form-control" />
-                  <div className="invalid-feedback" />
-                  <div className="d-flex justify-content-end">
-                    <button type="button" className="me-2 btn btn-secondary">Отменить</button>
-                    <button type="submit" className="btn btn-primary">Отправить</button>
-                  </div>
-                </div>
-              </form>
+            <div className="d-flex justify-content-end">
+              <button type="button" className="me-2 btn btn-secondary" disabled={isDisabled} onClick={handleClose}>Отменить</button>
+              <button type="submit" className="btn btn-primary" disabled={isDisabled} onClick={handleClose}>Отправить</button>
             </div>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={show1} onHide={handleClose1}>
+        <Modal.Body>
+          <div className="d-flex justify-content-end">
+          <a href="#" className="dropdown-item" role="button" onClick={handleShow3}>Удалить</a>
+          <a href="#" className="dropdown-item" role="button" onClick={handleShow2}>Переименовать</a>
           </div>
-        </div>
-      </div>
+        </Modal.Body>
+      </Modal>
+      <Modal show={show2} onHide={handleClose2}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <div className="modal-title h4">Переименовать канал</div>
+            <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="d-flex justify-content-end">
+            <a href="#" className="dropdown-item" role="button" onClick={handleClose2}>Переименовать</a>
+            <a href="#" className="dropdown-item" role="button" onClick={handleClose2}>Отменить</a>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal show={show3} onHide={handleClose3}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <div className="modal-title h4">Удалить канал</div>
+            <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="d-flex justify-content-end">
+            <a href="#" className="dropdown-item" role="button" onClick={func3}>Удалить</a>
+            <a href="#" className="dropdown-item" role="button" onClick={handleClose3}>Отменить</a>
+          </div>
+        </Modal.Body>
+      </Modal>
       <div className="h-100" id="chat">
         <div className="d-flex flex-column h-100">
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
@@ -103,7 +194,7 @@ const Home = ({
               <div className="col-4 col-md-2 border-end pt-5 px-0 bg-light">
                 <div className="d-flex justify-content-between mb-2 ps-4 pe-2">
                   <span>Каналы</span>
-                  <button type="button" data-toggle="modal" data-target="#modal" className="p-0 text-primary btn btn-group-vertical" onClick={changeModalModus}>
+                  <button type="button" className="p-0 text-primary btn btn-group-vertical" disabled={isDisabled} onClick={handleShow}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
                       <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
                       <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
@@ -112,14 +203,17 @@ const Home = ({
                   </button>
                 </div>
                 <ul className="nav flex-column nav-pills nav-fill px-2">
-                  {channels?.map(({ id, name }) => (
+                  {Array.isArray(channels) ? channels.map(({ id, name }) => (
                     <li key={id} className="nav-item w-100">
-                      <button type="button" data-id={id} className={id === parseInt(currentId, 10) ? 'w-100 rounded-0 text-start btn btn-secondary' : 'w-100 rounded-0 text-start btn'} onClick={changeCurrentId}>
-                        <span className="me-1">#</span>
-                        {name}
-                      </button>
+                      <div role="group" className="d-flex show dropdown btn-group">
+                        <button type="button" data-id={id} className={id === parseInt(currentId, 10) ? 'w-100 rounded-0 text-start btn btn-secondary' : 'w-100 rounded-0 text-start btn'} onClick={changeCurrentId}>
+                          <span className="me-1">#</span>
+                          {name}
+                        </button>
+                        <button aria-haspopup="true" aria-expanded="true" data-id={id} type="button" className="flex-grow-0 dropdown-toggle dropdown-toggle-split btn" onClick={func1}></button>
+                      </div>
                     </li>
-                  ))}
+                  )) : ''}
                 </ul>
               </div>
               <div className="col p-0 h-100">
@@ -140,15 +234,15 @@ const Home = ({
                   </div>
                   <div id="messages-box" className="chat-messages overflow-auto px-5 ">
                     {messages?.map((message) => (
-                      <li key={message.id} className="nav-item w-100">{message.name}</li>
+                      parseInt(message.channelId, 10) === currentId ? <li key={message.id} className="nav-item w-100">{message.body}</li> : ''
                     ))}
                   </div>
                   <div className="mt-auto px-5 py-3">
-                    <form noValidate="" className="py-1 border rounded-2">
+                    <form noValidate="" className="py-1 border rounded-2" onSubmit={addNewMessage}>
                       <div className="input-group has-validation">
-                        <input className="body" data-testid="new-message" placeholder="Введите сообщение..." />
+                        <input name="body" data-testid="new-message" placeholder="Введите сообщение..." />
                         <div className="input-group-append">
-                          <button disabled="" type="submit" className="btn btn-group-vertical">
+                          <button disabled="" type="submit" className="btn btn-group-vertical" disabled={isDisabled}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
                               <path fillRule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
                             </svg>
