@@ -10,7 +10,9 @@ import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { io } from 'socket.io-client';
 import App from './components/App.jsx';
 import reducer from './components/reducers.jsx';
-import { fetchChannels, addChannel, removeChannel, addMessage, removeMessage, changeId } from './components/actions.jsx';
+import {
+  fetchChannels, addChannel, removeChannel, addMessage, removeMessage, changeId, renameChannel,
+} from './components/actions.jsx';
 
 const socket = io();
 
@@ -48,6 +50,10 @@ socket.on('removeChannel', async ({ id }) => {
     .catch(() => {
       throw new Error();
     });
+});
+
+socket.on('renameChannel', async ({ id, name }) => {
+  await store.dispatch(renameChannel({ id, name }));
 });
 
 socket.on('newMessage', async (message) => {

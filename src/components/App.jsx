@@ -3,15 +3,28 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect,
 } from 'react-router-dom';
-import { Nav } from 'react-bootstrap';
+import i18n from 'i18next';
+import { useTranslation, initReactI18next } from 'react-i18next';
+import locales from '../locales/index.js';
 import authContext from '../contexts/index.jsx';
 import useAuth from '../hooks/index.jsx';
 import Login from './Login.jsx';
+import SignUp from './SignUp.jsx';
 import Home from './Home.jsx';
 import NotFound from './NotFound.jsx';
+
+i18n
+  .use(initReactI18next)
+  .init({
+    lng: 'ru',
+    fallbackLng: 'ru',
+    resources: locales,
+    interpolation: {
+      escapeValue: false,
+    },
+  });
 
 const AuthProvider = ({ children }) => {
   const token = !!localStorage.userId;
@@ -31,38 +44,30 @@ const AuthProvider = ({ children }) => {
 };
 
 const PrivateRoute = ({ children, path }) => {
-  //console.log(localStorage);
   const auth = useAuth();
   return (
     <Route
       path={path}
-      render={() => auth.loggedIn ? children : <Redirect to={{ pathname: '/login' }} />}
+      render={() => (auth.loggedIn ? children : <Redirect to={{ pathname: '/login' }} />)}
     />
   );
 };
 
-export default function App({ socket }) {
+const App = ({ socket }) => {
+  const { t } = useTranslation();
   return (
     <AuthProvider>
       <Router>
         <div className="d-flex flex-column h-100">
-          <Nav className="mr-auto">
-            <ul>
-              <li>
-                <Nav.Link as={Link} to="/">/</Nav.Link>
-              </li>
-              <li>
-                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-              </li>
-            </ul>
-          </Nav>
-
           <Switch>
             <Route path="/login">
-              <Login />
+              <Login t={t} />
+            </Route>
+            <Route path="/signup">
+              <SignUp t={t} />
             </Route>
             <PrivateRoute path="/">
-              <Home socket={socket} />
+              <Home socket={socket} t={t} />
             </PrivateRoute>
             <Route path="*">
               <NotFound />
@@ -72,4 +77,6 @@ export default function App({ socket }) {
       </Router>
     </AuthProvider>
   );
-}
+};
+
+export default App;

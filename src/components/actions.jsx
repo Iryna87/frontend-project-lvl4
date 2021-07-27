@@ -14,8 +14,10 @@ export const removeMessageFailure = createAction('MESSAGE_REMOVE_FAILURE');
 export const removeChannelRequest = createAction('CHANNEL_REMOVE_REQUEST');
 export const removeChannelSuccess = createAction('CHANNEL_REMOVE_SUCCESS');
 export const removeChannelFailure = createAction('CHANNEL_REMOVE_FAILURE');
+export const renameChannelSuccess = createAction('CHANNEL_RENAME_SUCCESS');
 export const addChannelSuccess = createAction('CHANNEL_ADD_SUCCESS');
 export const addMessageSuccess = createAction('MESSAGE_ADD_SUCCESS');
+export const addUserSuccess = createAction('USER_ADD_SUCCESS');
 
 export const changeId = (id) => async (dispatch) => {
   dispatch(changeCurrentChannelIdSuccess({ id }));
@@ -28,6 +30,10 @@ export const addMessage = ({ message }) => async (dispatch) => {
   dispatch(addMessageSuccess({ message }));
 };
 
+export const addUser = ({ body }) => async (dispatch) => {
+  dispatch(addUserSuccess({ body }));
+};
+
 export const removeChannel = ({ id }) => async (dispatch) => {
   dispatch(removeChannelRequest());
   try {
@@ -36,6 +42,10 @@ export const removeChannel = ({ id }) => async (dispatch) => {
     dispatch(removeChannelFailure());
     throw e;
   }
+};
+
+export const renameChannel = ({ id, name }) => async (dispatch) => {
+  dispatch(renameChannelSuccess({ id, name }));
 };
 
 export const removeMessage = ({ id }) => async (dispatch) => {

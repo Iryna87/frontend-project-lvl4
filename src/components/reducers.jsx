@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
 import * as actions from './actions.jsx';
@@ -61,6 +60,29 @@ const channels = handleActions({
   [actions.removeChannelSuccess](state, { payload: { id } }) {
     return state.filter((channel) => channel.id !== id);
   },
+  [actions.renameChannelSuccess](state, { payload: { id, name } }) {
+    return state.map((channel) => {
+      if (channel.id === id) {
+        // eslint-disable-next-line no-param-reassign
+        channel.name = name;
+        return channel;
+      }
+      return channel;
+    });
+  },
+}, []);
+
+const users = handleActions({
+  [actions.fetchChannelsSuccess](state, { payload }) {
+    return payload.data.users;
+  },
+  [actions.addUserSuccess](state, { payload: { body } }) {
+    const newBody = JSON.parse(body);
+    return [...state, newBody.body];
+  },
+  [actions.removeChannelSuccess](state, { payload: { id } }) {
+    return state.filter((channel) => channel.id !== id);
+  },
 }, []);
 
 const currentId = handleActions({
@@ -78,5 +100,6 @@ export default combineReducers({
   messageRemovingState,
   messages,
   channels,
+  users,
   currentId,
 });

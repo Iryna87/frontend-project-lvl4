@@ -130,7 +130,8 @@ export default (app, defaultState = {}) => {
 
     reply
       .header('Content-Type', 'application/json; charset=utf-8')
-      .send(_.omit(state, 'users'));
+      //.send(_.omit(state, 'users'));
+      .send(state);
   });
 
   app
