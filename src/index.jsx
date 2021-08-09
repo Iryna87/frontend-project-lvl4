@@ -8,6 +8,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { io } from 'socket.io-client';
+import Rollbar from 'rollbar';
 import App from './components/App.jsx';
 import reducer from './components/reducers.jsx';
 import {
@@ -15,6 +16,14 @@ import {
 } from './components/actions.jsx';
 
 const socket = io();
+
+const rollbar = new Rollbar({
+  accessToken: '84a20308b13a42f18039aef07572e80b',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+});
+
+rollbar.log('Hello world!');
 
 const middleware = getDefaultMiddleware({
   immutableCheck: false,

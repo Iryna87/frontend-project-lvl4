@@ -25,6 +25,7 @@ const mapStateToProps = (state) => {
 
 const actionCreators = {
   addUser: actions.addUser,
+  fetchChannels: actions.fetchChannels,
 };
 
 const Schema = Yup.object().shape({

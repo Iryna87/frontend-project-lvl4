@@ -73,12 +73,12 @@ const channels = handleActions({
 }, []);
 
 const users = handleActions({
-  [actions.fetchChannelsSuccess](state, { payload }) {
-    return payload.data.users;
+  [actions.fetchChannelsSuccess](state) {
+    return state;
   },
   [actions.addUserSuccess](state, { payload: { body } }) {
     const newBody = JSON.parse(body);
-    return [...state, newBody.body];
+    return [...state, newBody];
   },
   [actions.removeChannelSuccess](state, { payload: { id } }) {
     return state.filter((channel) => channel.id !== id);

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef, useEffect } from 'react';
-import { Modal, Form, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import useAuth from '../hooks/index.jsx';
@@ -32,75 +32,23 @@ const Home = ({
   changeId,
   socket,
   t,
+  addChannelModal,
+  removeChannelModal,
+  renameChannelModal,
 }) => {
-  console.log(state);
   const auth = useAuth();
-  const [show, setShow] = useState(false);
-  const [show1, setShow1] = useState(false);
-  const [show2, setShow2] = useState(false);
-  const [show3, setShow3] = useState(false);
+  const [showMode, handleShow] = useState(false);
+  const showDropDown = () => handleShow(true);
+  const hideDropDown = () => handleShow(false);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const handleClose1 = () => setShow1(false);
-  const handleShow1 = () => setShow1(true);
-  const handleClose2 = () => setShow2(false);
-  const handleShow2 = () => setShow2(true);
-  const handleClose3 = () => setShow3(false);
-  const handleShow3 = () => setShow3(true);
+  console.log(state);
 
   const inputRef = useRef();
   useEffect(() => {
     inputRef.current.focus();
   }, []);
 
-  const names = channels?.map((channel) => channel.name);
-
-  const addNewChannel = async (e) => {
-    e.preventDefault();
-    const { name } = Object.fromEntries(new FormData(e.target));
-    const differenses = names.filter((item) => item === name);
-    if (differenses.length > 0 || name.length > 50) {
-      throw new Error('This name alleready exists or is too long');
-    } else {
-      try {
-        await socket.emit('newChannel', { name });
-      } catch (err) {
-        throw new Error();
-      }
-    }
-  };
-
-  const removeNewChannel = async (e) => {
-    e.preventDefault();
-    const result = channels.filter(({ id }) => id === currentId);
-    const { id, removable } = result[0];
-    if (removable !== true) {
-      throw new Error('This channel is not removable');
-    } else {
-      try {
-        await socket.emit('removeChannel', { id });
-      } catch (err) {
-        throw new Error();
-      }
-    }
-  };
-
-  const renameNewChannel = async (e) => {
-    console.log(e.target);
-    e.preventDefault();
-    const { name } = Object.fromEntries(new FormData(e.target));
-    const differenses = names.filter((item) => item === name);
-    if (differenses.length > 0) {
-      throw new Error('This name alleready exists');
-    } else {
-      try {
-        await socket.emit('renameChannel', { id: currentId, name });
-      } catch (err) {
-        throw new Error();
-      }
-    }
-  };
+  const activeChannel = channels.find(({ id }) => id === currentId);
 
   const addNewMessage = async (e) => {
     e.preventDefault();
@@ -134,95 +82,25 @@ const Home = ({
     auth.loggedIn ? auth.logOut() : <Button as={Link} to="/login">Log in</Button>
   );
 
-  const func1 = (e) => {
-    changeCurrentId(e);
-    handleShow1();
+  const handleRemove = () => {
+    hideDropDown();
+    removeChannelModal(activeChannel.id);
+  };
+  const handleRename = () => {
+    hideDropDown();
+    renameChannelModal(activeChannel.id, activeChannel.name);
+  };
+  const handleAdd = (name) => {
+    hideDropDown();
+    addChannelModal(name);
   };
 
-  const func3 = (e) => {
-    handleClose3();
-    removeNewChannel(e);
-  };
-
-  const func4 = () => {
-    handleClose1();
-    handleShow3();
-  };
-
-  const func5 = () => {
-    handleClose1();
-    handleShow2();
-  };
-
-  const currentNameArr = Array.isArray(channels) ? channels?.filter((channel) => channel.id === parseInt(currentId, 10)) : '';
+  const currentNameArr = Array.isArray(channels) ? channels?.filter((channel) => channel.id === currentId) : '';
 
   const msgLengthArr = messages?.filter((message) => parseInt(message.currentId, 10) === currentId);
 
   return (
     <>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <div className="modal-title h4">{t('AddChannel')}</div>
-            <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={addNewChannel}>
-            <div className="form-group">
-              <input name="name" data-testid="add-channel" className="mb-2 form-control" ref={inputRef} />
-              <div className="invalid-feedback" />
-            </div>
-            <div className="d-flex justify-content-end">
-              <button type="button" className="me-2 btn btn-secondary" onClick={handleClose}>{t('Cancel')}</button>
-              <button type="submit" className="btn btn-primary" onClick={handleClose}>{t('Send')}</button>
-            </div>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer />
-      </Modal>
-      <Modal show={show1} onHide={handleClose1}>
-        <Modal.Body>
-          <div className="d-flex justify-content-end">
-            <a href="#" className="dropdown-item" role="button" onClick={func4}>{t('Remove')}</a>
-            <a href="#" className="dropdown-item" role="button" onClick={func5}>{t('Rename')}</a>
-          </div>
-        </Modal.Body>
-      </Modal>
-      <Modal show={show2} onHide={handleClose2} onSubmit={renameNewChannel}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <div className="modal-title h4">{t('RenameChannel')}</div>
-            <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <div className="form-group">
-              <input name="name" data-testid="add-channel" className="mb-2 form-control" ref={inputRef} />
-              <div className="invalid-feedback" />
-            </div>
-            <div className="d-flex justify-content-end">
-              <button type="submit" className="btn btn-primary" disabled={!show2} onClick={handleClose2}>{t('Rename')}</button>
-              <button type="button" className="me-2 btn btn-secondary" onClick={handleClose2}>{t('Cancel')}</button>
-            </div>
-          </Form>
-        </Modal.Body>
-      </Modal>
-      <Modal show={show3} onHide={handleClose3}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <div className="modal-title h4">{t('RemoveChannel')}</div>
-            <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="d-flex justify-content-end">
-            <a href="#" className="dropdown-item" role="button" disabled={!show3} onClick={func3}>{t('Remove')}</a>
-            <a href="#" className="dropdown-item" role="button" onClick={handleClose3}>{t('Cancel')}</a>
-          </div>
-        </Modal.Body>
-      </Modal>
       <div className="h-100" id="chat">
         <div className="d-flex flex-column h-100">
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
@@ -236,7 +114,7 @@ const Home = ({
               <div className="col-4 col-md-2 border-end pt-5 px-0 bg-light">
                 <div className="d-flex justify-content-between mb-2 ps-4 pe-2">
                   <span>{t('Channels')}</span>
-                  <button type="button" className="p-0 text-primary btn btn-group-vertical" onClick={handleShow}>
+                  <button type="button" className="p-0 text-primary btn btn-group-vertical" onClick={handleAdd}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
                       <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
                       <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
@@ -245,14 +123,18 @@ const Home = ({
                   </button>
                 </div>
                 <ul className="nav flex-column nav-pills nav-fill px-2">
-                  {Array.isArray(channels) ? channels.map(({ id, name }) => (
+                  {Array.isArray(channels) ? channels.map(({ id, name, removable }) => (
                     <li key={id} className="nav-item w-100">
-                      <div role="group" className="d-flex show dropdown btn-group">
-                        <button type="button" data-id={id} className={id === parseInt(currentId, 10) ? 'w-100 rounded-0 text-start btn btn-secondary' : 'w-100 rounded-0 text-start btn'} onClick={changeCurrentId}>
+                      <div role="group" className={showMode ? 'd-flex show dropdown btn-group' : 'd-flex dropdown btn-group'}>
+                        <button type="button" data-id={id} className={id === currentId ? 'w-100 rounded-0 text-start btn btn-secondary' : 'w-100 rounded-0 text-start btn'} onClick={changeCurrentId}>
                           <span className="me-1">#</span>
                           {name}
                         </button>
-                        <button aria-haspopup="true" aria-expanded="true" data-id={id} type="button" className="flex-grow-0 dropdown-toggle dropdown-toggle-split btn" onClick={func1} />
+                        {removable ? <button aria-haspopup="true" aria-expanded={showMode} type="button" className="flex-grow-0 dropdown-toggle dropdown-toggle-split btn" onClick={showDropDown} /> : ''}
+                        <div x-placement="bottom-start" aria-labelledby="" className={showMode && id === currentId ? 'dropdown-menu show' : 'dropdown-menu'}>
+                          <a href="#" className="dropdown-item" role="button" onClick={handleRename}>{t('Rename')}</a>
+                          <a href="#" className="dropdown-item" role="button" onClick={handleRemove}>{t('Remove')}</a>
+                        </div>
                       </div>
                     </li>
                   )) : ''}

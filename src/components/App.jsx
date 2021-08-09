@@ -14,6 +14,22 @@ import Login from './Login.jsx';
 import SignUp from './SignUp.jsx';
 import Home from './Home.jsx';
 import NotFound from './NotFound.jsx';
+import getModal from './modals/index.js';
+
+const renderModal = (modalData, hideModal, socket, t) => {
+  if (!modalData.type) {
+    return null;
+  }
+  const Component = getModal(modalData.type);
+  return (
+    <Component
+      modalData={modalData}
+      hideModal={hideModal}
+      socket={socket}
+      t={t}
+    />
+  );
+};
 
 i18n
   .use(initReactI18next)
@@ -55,6 +71,13 @@ const PrivateRoute = ({ children, path }) => {
 
 const App = ({ socket }) => {
   const { t } = useTranslation();
+  const [modalData, setModalData] = useState({ type: null, channel: null });
+  const showModal = (type, channel = null) => setModalData({ type, channel });
+  const hideModal = () => setModalData({ type: null, channel: null });
+
+  const addChannelModal = () => showModal('adding');
+  const removeChannelModal = (id) => showModal('removing', { id });
+  const renameChannelModal = (id, name) => showModal('renaming', { id, name });
   return (
     <AuthProvider>
       <Router>
@@ -67,12 +90,19 @@ const App = ({ socket }) => {
               <SignUp t={t} />
             </Route>
             <PrivateRoute path="/">
-              <Home socket={socket} t={t} />
+              <Home
+                socket={socket}
+                t={t}
+                addChannelModal={addChannelModal}
+                removeChannelModal={removeChannelModal}
+                renameChannelModal={renameChannelModal}
+              />
             </PrivateRoute>
             <Route path="*">
               <NotFound />
             </Route>
           </Switch>
+          {renderModal(modalData, hideModal, socket, t)}
         </div>
       </Router>
     </AuthProvider>
