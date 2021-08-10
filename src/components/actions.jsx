@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { createAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import routes from '../routes.js';
@@ -67,6 +68,9 @@ const getAuthHeader = () => {
 };
 
 export const fetchChannels = () => async (dispatch) => {
+  if (_.isEmpty(getAuthHeader())) {
+    return;
+  }
   dispatch(fetchChannelsRequest());
   try {
     const response = await axios.get(routes.dataPath(), { headers: getAuthHeader() });

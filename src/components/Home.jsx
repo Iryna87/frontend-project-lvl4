@@ -28,7 +28,6 @@ const Home = ({
   channels,
   currentId,
   messages,
-  state,
   changeId,
   socket,
   t,
@@ -40,8 +39,6 @@ const Home = ({
   const [showMode, handleShow] = useState(false);
   const showDropDown = () => handleShow(true);
   const hideDropDown = () => handleShow(false);
-
-  console.log(state);
 
   const inputRef = useRef();
   useEffect(() => {
@@ -81,7 +78,6 @@ const Home = ({
   const handleCloseButton = () => (
     auth.loggedIn ? auth.logOut() : <Button as={Link} to="/login">Log in</Button>
   );
-
   const handleRemove = () => {
     hideDropDown();
     removeChannelModal(activeChannel.id);
@@ -96,8 +92,7 @@ const Home = ({
   };
 
   const currentNameArr = Array.isArray(channels) ? channels?.filter((channel) => channel.id === currentId) : '';
-
-  const msgLengthArr = messages?.filter((message) => parseInt(message.currentId, 10) === currentId);
+  const msgLengthArr = messages?.filter((message) => message.channelId === currentId);
 
   return (
     <>

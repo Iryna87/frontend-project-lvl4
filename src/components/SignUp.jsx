@@ -133,7 +133,7 @@ const SignUp = ({ addUser, t }) => {
                     />
                     <Form.Control.Feedback type="invalid">{t('PasswordEquility')}</Form.Control.Feedback>
                   </Form.Group>
-                  <Button type="submit" variant="outline-primary">{t('Registration')}</Button>
+                  <Button type="submit" variant="outline-primary">{t('Registration1')}</Button>
                 </Form>
               </div>
             </div>

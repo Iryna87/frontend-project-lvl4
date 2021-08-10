@@ -1,18 +1,20 @@
+/* eslint-disable max-len */
 // @ts-check
 
 import 'core-js/stable/index.js';
 import 'regenerator-runtime/runtime.js';
 import '../assets/application.scss';
 import ReactDOM from 'react-dom';
-import React from 'react';
+import React, { useState } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { io } from 'socket.io-client';
 import Rollbar from 'rollbar';
+import authContext from './contexts/index.jsx';
 import App from './components/App.jsx';
 import reducer from './components/reducers.jsx';
 import {
-  fetchChannels, addChannel, removeChannel, addMessage, removeMessage, changeId, renameChannel,
+  addChannel, removeChannel, addMessage, removeMessage, changeId, renameChannel,
 } from './components/actions.jsx';
 
 const socket = io();
@@ -37,7 +39,25 @@ const store = configureStore({
   devTools: process.env.NODE_ENV !== 'production',
 });
 
-store.dispatch(fetchChannels());
+const AuthProvider = ({ children }) => {
+  const token = !!localStorage.userId;
+  const [loggedIn, setLoggedIn] = useState(token);
+
+  const logIn = () => setLoggedIn(true);
+  const logOut = () => {
+    localStorage.removeItem('userId');
+    setLoggedIn(false);
+  };
+
+  return (
+    <authContext.Provider value={{
+      loggedIn, logIn, logOut, userData: localStorage.userId ? JSON.parse(localStorage.userId) : null,
+    }}
+    >
+      {children}
+    </authContext.Provider>
+  );
+};
 
 socket.on('newChannel', async (channel) => {
   await store.dispatch(addChannel(channel))
@@ -75,7 +95,9 @@ socket.on('newMessage', async (message) => {
 
 ReactDOM.render(
   <Provider store={store}>
-    <App socket={socket} />
+    <AuthProvider>
+      <App socket={socket} />
+    </AuthProvider>
   </Provider>,
   document.querySelector('#chat'),
 );

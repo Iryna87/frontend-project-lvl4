@@ -2,6 +2,7 @@ const ru = {
   translation: {
     Enter: 'Войти',
     Registration: 'Регистрация',
+    Registration1: 'Зарегистрироваться',
     Exit: 'Выйти',
     Channels: 'Каналы',
     AddChannel: 'Добавить канал',

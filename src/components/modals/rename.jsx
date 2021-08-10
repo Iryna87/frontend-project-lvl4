@@ -58,7 +58,7 @@ const Rename = ({
       <Modal.Body>
         <Form onSubmit={renameNewChannel}>
           <div className="form-group">
-            <input name="name" data-testid="add-channel" className="mb-2 form-control" ref={inputRef} />
+            <input name="name" data-testid="rename-channel" className="mb-2 form-control" ref={inputRef} />
             <div className="invalid-feedback" />
           </div>
           <div className="d-flex justify-content-end">
