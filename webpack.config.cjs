@@ -8,6 +8,9 @@ const mode = process.env.NODE_ENV || 'development';
 
 module.exports = {
   mode,
+  entry: [
+    `${__dirname}/src/index.js`,
+  ],
   resolve: {
     extensions: ['.js', '.jsx'],
   },
