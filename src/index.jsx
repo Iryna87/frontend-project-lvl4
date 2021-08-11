@@ -60,45 +60,47 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-socket.on('newChannel', async (channel) => {
-  await store.dispatch(addChannel(channel))
-    .catch(() => {
-      throw new Error();
-    });
-  await store.dispatch(changeId(parseInt(channel.id, 10)))
-    .catch(() => {
-      throw new Error();
-    });
-});
+export default () => {
+  socket.on('newChannel', async (channel) => {
+    await store.dispatch(addChannel(channel))
+      .catch(() => {
+        throw new Error();
+      });
+    await store.dispatch(changeId(parseInt(channel.id, 10)))
+      .catch(() => {
+        throw new Error();
+      });
+  });
 
-socket.on('removeChannel', async ({ id }) => {
-  await store.dispatch(removeChannel({ id }))
-    .catch(() => {
+  socket.on('removeChannel', async ({ id }) => {
+    await store.dispatch(removeChannel({ id }))
+      .catch(() => {
+        throw new Error();
+      });
+    await store.dispatch(removeMessage({ id }))
+      .catch(() => {
+        throw new Error();
+      });
+  });
+
+  socket.on('renameChannel', async ({ id, name }) => {
+    await store.dispatch(renameChannel({ id, name }));
+  });
+
+  socket.on('newMessage', async (message) => {
+    try {
+      await store.dispatch(addMessage({ message }));
+    } catch (err) {
       throw new Error();
-    });
-  await store.dispatch(removeMessage({ id }))
-    .catch(() => {
-      throw new Error();
-    });
-});
+    }
+  });
 
-socket.on('renameChannel', async ({ id, name }) => {
-  await store.dispatch(renameChannel({ id, name }));
-});
-
-socket.on('newMessage', async (message) => {
-  try {
-    await store.dispatch(addMessage({ message }));
-  } catch (err) {
-    throw new Error();
-  }
-});
-
-ReactDOM.render(
-  <Provider store={store}>
-    <AuthProvider>
-      <App socket={socket} />
-    </AuthProvider>
-  </Provider>,
-  document.querySelector('#chat'),
-);
+  ReactDOM.render(
+    <Provider store={store}>
+      <AuthProvider>
+        <App socket={socket} />
+      </AuthProvider>
+    </Provider>,
+    document.querySelector('#chat'),
+  );
+};
