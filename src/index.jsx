@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /* eslint-disable max-len */
 // @ts-check
 
