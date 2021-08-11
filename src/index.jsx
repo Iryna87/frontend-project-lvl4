@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /* eslint-disable max-len */
 // @ts-check
 
@@ -101,7 +102,3 @@ ReactDOM.render(
   </Provider>,
   document.querySelector('#chat'),
 );
-
-if (process.env.NODE_ENV !== 'production') {
-  localStorage.debug = 'chat:*';
-}
