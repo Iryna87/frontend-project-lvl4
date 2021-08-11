@@ -29,13 +29,13 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        loader: 'string-replace-loader',
         exclude: /node_modules/,
         use: 'babel-loader',
       },
       {
         test: /\.s[ac]ss$/i,
         use: [
+          { loader: 'string-replace-loader' },
           { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' },
           { loader: 'postcss-loader' },
