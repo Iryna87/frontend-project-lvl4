@@ -56,7 +56,7 @@ export default ({ t }) => {
               <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
                 <h1 className="text-center mb-4">{t('Enter')}</h1>
                 <Form.Group>
-                  <Form.Label htmlFor="username" />
+                  <Form.Label htmlFor={t('username')} />
                   <Form.Control
                     onChange={formik.handleChange}
                     value={formik.values.username}
@@ -70,7 +70,7 @@ export default ({ t }) => {
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label htmlFor="password" />
+                  <Form.Label htmlFor={t('password')} />
                   <Form.Control
                     type="password"
                     onChange={formik.handleChange}

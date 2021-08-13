@@ -89,7 +89,7 @@ const SignUp = ({ addUser, t }) => {
                 <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
                   <h1 className="text-center mb-3">{t('Registration')}</h1>
                   <Form.Group>
-                    <Form.Label htmlFor="username" />
+                    <Form.Label htmlFor={t('usernameReg')} />
                     <Form.Control
                       onChange={formik.handleChange}
                       value={formik.values.username}
@@ -104,7 +104,7 @@ const SignUp = ({ addUser, t }) => {
                     <Form.Control.Feedback type="invalid">{t('Between3and20')}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label htmlFor="password" />
+                    <Form.Label htmlFor={t('password')} />
                     <Form.Control
                       type="password"
                       onChange={formik.handleChange}
@@ -119,7 +119,7 @@ const SignUp = ({ addUser, t }) => {
                     <Form.Control.Feedback type="invalid">{t('Minimun6')}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label htmlFor="password" />
+                    <Form.Label htmlFor={t('confirmPassword')} />
                     <Form.Control
                       type="password"
                       onChange={formik.handleChange}
