@@ -89,7 +89,7 @@ const SignUp = ({ addUser, t }) => {
                 <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
                   <h1 className="text-center mb-3">{t('Registration')}</h1>
                   <Form.Group>
-                    <Form.Label htmlFor="username" />
+                    <Form.Label htmlFor="username">{t('usernameReg')}</Form.Label>
                     <Form.Control
                       onChange={formik.handleChange}
                       value={formik.values.username}
@@ -101,10 +101,10 @@ const SignUp = ({ addUser, t }) => {
                       required
                       ref={inputRef}
                     />
-                    <Form.Control.Feedback type="invalid">{t('Between3and20')}</Form.Control.Feedback>
+                    {(formik.values.username.split('').length < 3 || formik.values.username.split('').length > 20) ? <Form.Control.Feedback type="invalid">{t('Between3and20')}</Form.Control.Feedback> : ''}
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label htmlFor="password" />
+                    <Form.Label htmlFor="password">{t('password')}</Form.Label>
                     <Form.Control
                       type="password"
                       onChange={formik.handleChange}
@@ -116,10 +116,10 @@ const SignUp = ({ addUser, t }) => {
                       isInvalid={(formik.values.password.split('').length < 6)}
                       required
                     />
-                    <Form.Control.Feedback type="invalid">{t('Minimun6')}</Form.Control.Feedback>
+                    {(formik.values.username.split('').length < 3 || formik.values.username.split('').length > 20) ? <Form.Control.Feedback type="invalid">{t('Minimun6')}</Form.Control.Feedback> : ''}
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label htmlFor="password" />
+                    <Form.Label htmlFor="password">{t('confirmPassword')}</Form.Label>
                     <Form.Control
                       type="password"
                       onChange={formik.handleChange}
@@ -131,7 +131,7 @@ const SignUp = ({ addUser, t }) => {
                       isInvalid={(formik.values.confirmPassword !== formik.values.password)}
                       required
                     />
-                    <Form.Control.Feedback type="invalid">{t('PasswordEquility')}</Form.Control.Feedback>
+                    {(formik.values.username.split('').length < 3 || formik.values.username.split('').length > 20) ? <Form.Control.Feedback type="invalid">{t('PasswordEquility')}</Form.Control.Feedback> : ''}
                   </Form.Group>
                   <Button type="submit" variant="outline-primary">{t('Registration1')}</Button>
                 </Form>

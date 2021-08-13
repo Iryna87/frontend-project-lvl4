@@ -84,7 +84,7 @@ export default ({ t }) => {
                     isInvalid={authFailed}
                     required
                   />
-                  <Form.Control.Feedback type="invalid">{t('Incorrect')}</Form.Control.Feedback>
+                  {authFailed ? <Form.Control.Feedback type="invalid">{t('Incorrect')}</Form.Control.Feedback> : ''}
                 </Form.Group>
                 <Button type="submit" variant="outline-primary">{t('Enter')}</Button>
               </Form>
