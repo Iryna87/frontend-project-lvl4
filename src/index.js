@@ -1,7 +1,11 @@
-import init from './index.jsx';
+import ReactDOM from 'react-dom';
+import { io } from 'socket.io-client';
+import init from './init.jsx';
 
-if (process.env.NODE_ENV !== 'production') {
-  localStorage.debug = 'chat:*';
-}
+const socket = io();
 
-init();
+const app = async () => {
+  const vdom = await init(socket);
+  ReactDOM.render(vdom, document.querySelector('#chat'));
+};
+app();

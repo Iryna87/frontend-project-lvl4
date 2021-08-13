@@ -4,11 +4,9 @@
 import 'core-js/stable/index.js';
 import 'regenerator-runtime/runtime.js';
 import '../assets/application.scss';
-import ReactDOM from 'react-dom';
 import React, { useState } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import { io } from 'socket.io-client';
 import Rollbar from 'rollbar';
 import authContext from './contexts/index.jsx';
 import App from './components/App.jsx';
@@ -16,8 +14,6 @@ import reducer from './components/reducers.jsx';
 import {
   addChannel, removeChannel, addMessage, removeMessage, changeId, renameChannel,
 } from './components/actions.jsx';
-
-const socket = io();
 
 const rollbar = new Rollbar({
   accessToken: '84a20308b13a42f18039aef07572e80b',
@@ -59,7 +55,7 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-export default () => {
+export default async (socket) => {
   socket.on('newChannel', async (channel) => {
     await store.dispatch(addChannel(channel))
       .catch(() => {
@@ -94,12 +90,11 @@ export default () => {
     }
   });
 
-  ReactDOM.render(
+  return (
     <Provider store={store}>
       <AuthProvider>
         <App socket={socket} />
       </AuthProvider>
-    </Provider>,
-    document.querySelector('#chat'),
+    </Provider>
   );
 };
