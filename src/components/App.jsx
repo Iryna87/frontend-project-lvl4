@@ -74,11 +74,11 @@ const App = ({ socket }) => {
     <Router>
       <div className="d-flex flex-column h-100">
         <Switch>
-          <Route path="/login">
-            <Login t={t} />
-          </Route>
           <Route path="/signup">
             <SignUp t={t} />
+          </Route>
+          <Route path="/login">
+            <Login t={t} />
           </Route>
           <PrivateRoute path="/">
             <Home
