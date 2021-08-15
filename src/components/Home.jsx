@@ -57,6 +57,7 @@ const Home = ({
       try {
         await socket.emit('newMessage', { body, channelId: currentId });
       } catch (err) {
+        console.log(err);
         throw new Error();
       }
     }
