@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useRef, useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Link } from 'react-bootstrap';
 import {
   useLocation,
   useHistory,
@@ -94,7 +94,7 @@ export default ({ t }) => {
             <div className="text-center">
               <span>Нет аккаунта?</span>
               {' '}
-              <a href="/signup">{t('Registration')}</a>
+              <Link to="/signup">{t('Registration')}</Link>
             </div>
           </div>
         </div>
