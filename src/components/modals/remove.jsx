@@ -44,8 +44,8 @@ const Remove = ({
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex justify-content-end">
-          <a href="#" className="dropdown-item" role="button" disabled={!modalData} onClick={removeNewChannel}>{t('Remove')}</a>
-          <a href="#" className="dropdown-item" role="button" onClick={hideModal}>{t('Cancel')}</a>
+          <button type="button" className="dropdown-item" disabled={!modalData} onClick={removeNewChannel}>{t('Remove')}</button>
+          <button type="button" className="dropdown-item" onClick={hideModal}>{t('Cancel')}</button>
         </div>
       </Modal.Body>
     </Modal>

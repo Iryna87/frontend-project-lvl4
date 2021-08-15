@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { useRef } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import {
+  Link,
   useLocation,
   useHistory,
 } from 'react-router-dom';
@@ -77,7 +78,9 @@ const SignUp = ({ addUser, t }) => {
 
   return (
     <>
-      <div className="container"><a className="navbar-brand" href="/">Hexlet Chat</a></div>
+      <div className="container">
+        <Link to="/" className="navbar-brand">Hexlet Chat</Link>
+      </div>
       <div className="container-fluid h-100">
         <div className="row justify-content-center align-content-center h-100">
           <div className="col-12 col-md-8 col-xxl-6">
@@ -119,7 +122,7 @@ const SignUp = ({ addUser, t }) => {
                     {(formik.values.username.split('').length < 3 || formik.values.username.split('').length > 20) ? <Form.Control.Feedback type="invalid">{t('Minimun6')}</Form.Control.Feedback> : ''}
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label htmlFor="password">{t('confirmPassword')}</Form.Label>
+                    <Form.Label htmlFor="confirmPassword">{t('confirmPassword')}</Form.Label>
                     <Form.Control
                       type="password"
                       onChange={formik.handleChange}

@@ -100,7 +100,7 @@ const Home = ({
         <div className="d-flex flex-column h-100">
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
             <div className="container">
-              <a className="navbar-brand" href="/">Hexlet Chat</a>
+              <Link to="/" className="navbar-brand">Hexlet Chat</Link>
               <button type="button" onClick={handleCloseButton} className="btn btn-primary">{t('Exit')}</button>
             </div>
           </nav>
@@ -127,8 +127,8 @@ const Home = ({
                         </button>
                         {removable ? <button aria-haspopup="true" aria-expanded={showMode} type="button" className="flex-grow-0 dropdown-toggle dropdown-toggle-split btn" onClick={showDropDown} /> : ''}
                         <div x-placement="bottom-start" aria-labelledby="" className={showMode && id === currentId ? 'dropdown-menu show' : 'dropdown-menu'}>
-                          <a href="#" className="dropdown-item" role="button" onClick={handleRename}>{t('Rename')}</a>
-                          <a href="#" className="dropdown-item" role="button" onClick={handleRemove}>{t('Remove')}</a>
+                          <button type="button" className="dropdown-item" onClick={handleRename}>{t('Rename')}</button>
+                          <button type="button" className="dropdown-item" onClick={handleRemove}>{t('Remove')}</button>
                         </div>
                       </div>
                     </li>

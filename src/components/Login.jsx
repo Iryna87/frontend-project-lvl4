@@ -49,7 +49,9 @@ export default ({ t }) => {
   });
   return (
     <>
-      <div className="container"><a className="navbar-brand" href="/">Hexlet Chat</a></div>
+      <div className="container">
+        <Link to="/" className="navbar-brand">Hexlet Chat</Link>
+      </div>
       <div className="row justify-content-center pt-5">
         <div className="col-12 col-md-8 col-xxl-6">
           <div className="card shadow-sm">
