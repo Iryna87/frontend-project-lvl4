@@ -40,9 +40,13 @@ const Rename = ({
       throw new Error('This name alleready exists');
     } else {
       try {
-        await socket.emit('renameChannel', { id: currentId, name });
+        await socket.emit('renameChannel', { id: currentId, name }, (response) => {
+          console.log(response.status);
+        });
       } catch (err) {
-        throw new Error();
+        if (err) {
+          throw err;
+        }
       }
     }
   };

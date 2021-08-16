@@ -39,9 +39,13 @@ const Add = ({
       throw new Error('This name alleready exists or is too long');
     } else {
       try {
-        await socket.emit('newChannel', { name });
+        await socket.emit('newChannel', { name }, (response) => {
+          console.log(response.status);
+        });
       } catch (err) {
-        throw new Error();
+        if (err) {
+          throw err;
+        }
       }
     }
   };

@@ -28,9 +28,13 @@ const Remove = ({
     const result = channels.filter(({ id }) => id === currentId);
     const { id } = result[0];
     try {
-      await socket.emit('removeChannel', { id });
+      await socket.emit('removeChannel', { id }, (response) => {
+        console.log(response.status);
+      });
     } catch (err) {
-      throw new Error();
+      if (err) {
+        throw err;
+      }
     }
   };
 

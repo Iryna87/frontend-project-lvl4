@@ -55,10 +55,13 @@ const Home = ({
       throw new Error('This message is too long or too many messages exist alleready');
     } else {
       try {
-        await socket.emit('newMessage', { body, channelId: currentId });
+        await socket.emit('newMessage', { body, channelId: currentId }, (response) => {
+          console.log(response.status);
+        });
       } catch (err) {
-        console.log(err);
-        throw new Error();
+        if (err) {
+          throw err;
+        }
       }
     }
   };
@@ -71,7 +74,9 @@ const Home = ({
       try {
         await changeId(parseInt(id, 10));
       } catch (err) {
-        throw new Error();
+        if (err) {
+          throw err;
+        }
       }
     }
   };
