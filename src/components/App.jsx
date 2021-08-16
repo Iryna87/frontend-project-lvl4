@@ -58,7 +58,7 @@ const App = ({ socket }) => {
   const auth = useAuth();
   useEffect(() => {
     dispatch(fetchChannels());
-  }, [auth.userData?.username]);
+  }, [auth.userData?.username, dispatch]);
 
   const { t } = useTranslation();
 
@@ -89,9 +89,7 @@ const App = ({ socket }) => {
               renameChannelModal={renameChannelModal}
             />
           </PrivateRoute>
-          <Route path="*">
-            <NotFound />
-          </Route>
+          <Route component={NotFound} />
         </Switch>
         {renderModal(modalData, hideModal, socket, t)}
       </div>
