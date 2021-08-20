@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import Rollbar from 'rollbar';
-import authContext from './contexts/index.jsx';
+import { authContext, socketContext } from './contexts/index.jsx';
 import App from './components/App.jsx';
 import reducer from './components/reducers.jsx';
 import {
@@ -55,6 +55,42 @@ const AuthProvider = ({ children }) => {
   );
 };
 
+const SocketProvider = ({ socket, children }) => (
+  <socketContext.Provider value={{
+    newMessage: (data) => {
+      socket.emit(
+        'newMessage',
+        data,
+        () => {},
+      );
+    },
+    newChannel: (data) => {
+      socket.emit(
+        'newChannel',
+        data,
+        () => {},
+      );
+    },
+    removeChannel: (data) => {
+      socket.emit(
+        'removeChannel',
+        data,
+        () => {},
+      );
+    },
+    renameChannel: (data) => {
+      socket.emit(
+        'renameChannel',
+        data,
+        () => {},
+      );
+    },
+  }}
+  >
+    { children }
+  </socketContext.Provider>
+);
+
 export default async (socket) => {
   socket.on('newChannel', async (channel) => {
     await store.dispatch(addChannel(channel))
@@ -93,7 +129,9 @@ export default async (socket) => {
   return (
     <Provider store={store}>
       <AuthProvider>
-        <App socket={socket} />
+        <SocketProvider socket={socket}>
+          <App />
+        </SocketProvider>
       </AuthProvider>
     </Provider>
   );

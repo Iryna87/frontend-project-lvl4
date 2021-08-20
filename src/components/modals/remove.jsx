@@ -2,6 +2,7 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { connect } from 'react-redux';
+import { useSocket } from '../../hooks/index.jsx';
 import * as actions from '../actions.jsx';
 
 const actionCreators = {
@@ -19,8 +20,9 @@ const mapStateToProps = (state) => {
 };
 
 const Remove = ({
-  hideModal, modalData, socket, t, channels, currentId, changeId,
+  hideModal, modalData, t, channels, currentId, changeId,
 }) => {
+  const apiSocket = useSocket();
   const removeNewChannel = async (e) => {
     e.preventDefault();
     hideModal();
@@ -28,9 +30,7 @@ const Remove = ({
     const result = channels.filter(({ id }) => id === currentId);
     const { id } = result[0];
     try {
-      await socket.emit('removeChannel', { id }, (response) => {
-        console.log(response.status);
-      });
+      apiSocket.removeChannel({ id });
     } catch (err) {
       if (err) {
         throw err;

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import { useSocket } from '../../hooks/index.jsx';
 import * as actions from '../actions.jsx';
 
 const actionCreators = {
@@ -21,8 +22,9 @@ const mapStateToProps = (state) => {
 };
 
 const Rename = ({
-  hideModal, modalData, channels, t, socket, currentId,
+  hideModal, modalData, channels, t, currentId,
 }) => {
+  const apiSocket = useSocket();
   const inputRef = useRef();
 
   useEffect(() => {
@@ -40,9 +42,7 @@ const Rename = ({
       throw new Error('This name alleready exists');
     } else {
       try {
-        await socket.emit('renameChannel', { id: currentId, name }, (response) => {
-          console.log(response.status);
-        });
+        apiSocket.renameChannel({ id: currentId, name });
       } catch (err) {
         if (err) {
           throw err;

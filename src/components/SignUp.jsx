@@ -11,7 +11,7 @@ import { useFormik } from 'formik';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import * as actions from './actions.jsx';
-import useAuth from '../hooks/index.jsx';
+import { useAuth } from '../hooks/index.jsx';
 import routes from '../routes.js';
 
 const mapStateToProps = (state) => {

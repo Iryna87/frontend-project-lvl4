@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import { useSocket } from '../../hooks/index.jsx';
 import * as actions from '../actions.jsx';
 
 const actionCreators = {
@@ -20,8 +21,9 @@ const mapStateToProps = (state) => {
 };
 
 const Add = ({
-  hideModal, channels, socket, t,
+  hideModal, channels, t,
 }) => {
+  const apiSocket = useSocket();
   const inputRef = useRef();
 
   useEffect(() => {
@@ -39,9 +41,7 @@ const Add = ({
       throw new Error('This name alleready exists or is too long');
     } else {
       try {
-        await socket.emit('newChannel', { name }, (response) => {
-          console.log(response.status);
-        });
+        apiSocket.newChannel({ name });
       } catch (err) {
         if (err) {
           throw err;

@@ -8,7 +8,7 @@ import {
 import { useDispatch } from 'react-redux';
 import i18n from 'i18next';
 import { useTranslation, initReactI18next } from 'react-i18next';
-import useAuth from '../hooks/index.jsx';
+import { useAuth } from '../hooks/index.jsx';
 import locales from '../locales/index.js';
 import Login from './Login.jsx';
 import SignUp from './SignUp.jsx';
@@ -17,7 +17,7 @@ import NotFound from './NotFound.jsx';
 import getModal from './modals/index.js';
 import { fetchChannels } from './actions.jsx';
 
-const renderModal = (modalData, hideModal, socket, t) => {
+const renderModal = (modalData, hideModal, t) => {
   if (!modalData.type) {
     return null;
   }
@@ -26,7 +26,6 @@ const renderModal = (modalData, hideModal, socket, t) => {
     <Component
       modalData={modalData}
       hideModal={hideModal}
-      socket={socket}
       t={t}
     />
   );
@@ -53,7 +52,7 @@ const PrivateRoute = ({ children, path }) => {
   );
 };
 
-const App = ({ socket }) => {
+const App = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   useEffect(() => {
@@ -82,7 +81,6 @@ const App = ({ socket }) => {
           </Route>
           <PrivateRoute path="/">
             <Home
-              socket={socket}
               t={t}
               addChannelModal={addChannelModal}
               removeChannelModal={removeChannelModal}
@@ -91,7 +89,7 @@ const App = ({ socket }) => {
           </PrivateRoute>
           <Route component={NotFound} />
         </Switch>
-        {renderModal(modalData, hideModal, socket, t)}
+        {renderModal(modalData, hideModal, t)}
       </div>
     </Router>
   );
