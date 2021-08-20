@@ -13,6 +13,7 @@ import locales from '../locales/index.js';
 import Login from './Login.jsx';
 import SignUp from './SignUp.jsx';
 import Home from './Home.jsx';
+import ComponentError from './Component.jsx';
 import NotFound from './NotFound.jsx';
 import getModal from './modals/index.js';
 import { fetchChannels } from './actions.jsx';
@@ -73,6 +74,9 @@ const App = () => {
     <Router>
       <div className="d-flex flex-column h-100">
         <Switch>
+          <Route path="/example-error">
+            <ComponentError />
+          </Route>
           <Route path="/signup">
             <SignUp t={t} />
           </Route>
