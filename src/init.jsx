@@ -15,8 +15,11 @@ import {
   addChannel, removeChannel, addMessage, removeMessage, changeId, renameChannel,
 } from './components/actions.jsx';
 
+const production = process.env.NODE_ENV === 'production';
+
 const rollbar = new Rollbar({
-  accessToken: '84a20308b13a42f18039aef07572e80b',
+  enabled: !!production,
+  accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
   captureUncaught: true,
   captureUnhandledRejections: true,
 });
@@ -36,8 +39,8 @@ const store = configureStore({
 });
 
 const AuthProvider = ({ children }) => {
-  const token = !!localStorage.userId;
-  const [loggedIn, setLoggedIn] = useState(token);
+  const tokenStorage = !!localStorage.userId;
+  const [loggedIn, setLoggedIn] = useState(tokenStorage);
 
   const logIn = () => setLoggedIn(true);
   const logOut = () => {

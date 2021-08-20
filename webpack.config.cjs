@@ -1,8 +1,10 @@
+/* eslint-disable import/no-extraneous-dependencies */
 // @ts-check
 
 const path = require('path');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { DefinePlugin } = require('webpack');
 
 const mode = process.env.NODE_ENV || 'development';
 
@@ -24,6 +26,10 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin(),
+    new DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.ROLLBAR_ACCESS_TOKEN': JSON.stringify(process.env.ROLLBAR_ACCESS_TOKEN),
+    }),
   ],
   module: {
     rules: [
