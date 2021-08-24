@@ -7,7 +7,7 @@ import '../assets/application.scss';
 import React, { useState } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import Rollbar from 'rollbar';
+import { Provider as ProviderRollbar, ErrorBoundary } from '@rollbar/react';
 import { authContext, socketContext } from './contexts/index.jsx';
 import App from './components/App.jsx';
 import reducer from './components/reducers.jsx';
@@ -15,16 +15,12 @@ import {
   addChannel, removeChannel, addMessage, removeMessage, changeId, renameChannel,
 } from './components/actions.jsx';
 
-const production = process.env.NODE_ENV === 'production';
-
-const rollbar = new Rollbar({
-  enabled: !!production,
+const rollbarConfig = {
+  environment: process.env.NODE_ENV,
   accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
   captureUncaught: true,
   captureUnhandledRejections: true,
-});
-
-rollbar.log('Hello world!');
+};
 
 const middleware = getDefaultMiddleware({
   immutableCheck: false,
@@ -130,12 +126,16 @@ export default async (socket) => {
   });
 
   return (
-    <Provider store={store}>
-      <AuthProvider>
-        <SocketProvider socket={socket}>
-          <App />
-        </SocketProvider>
-      </AuthProvider>
-    </Provider>
+    <ProviderRollbar config={rollbarConfig}>
+      <ErrorBoundary>
+        <Provider store={store}>
+          <AuthProvider>
+            <SocketProvider socket={socket}>
+              <App />
+            </SocketProvider>
+          </AuthProvider>
+        </Provider>
+      </ErrorBoundary>
+    </ProviderRollbar>
   );
 };

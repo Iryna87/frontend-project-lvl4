@@ -27,7 +27,6 @@ module.exports = {
   plugins: [
     new MiniCssExtractPlugin(),
     new DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.ROLLBAR_ACCESS_TOKEN': JSON.stringify(process.env.ROLLBAR_ACCESS_TOKEN),
     }),
   ],
