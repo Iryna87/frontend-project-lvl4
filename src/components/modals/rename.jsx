@@ -3,14 +3,6 @@ import { connect } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useSocket } from '../../hooks/index.jsx';
-import * as actions from '../actions.jsx';
-
-const actionCreators = {
-  addChannel: actions.addChannel,
-  addMessage: actions.addMessage,
-  removeChannel: actions.removeChannel,
-  changeId: actions.changeId,
-};
 
 const mapStateToProps = (state) => {
   const props = {
@@ -53,11 +45,9 @@ const Rename = ({
 
   return (
     <Modal show onHide={hideModal} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <div className="modal-title h4">{t('RenameChannel')}</div>
-          <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
-        </Modal.Title>
+      <Modal.Header>
+        <div className="modal-title h4">{t('RenameChannel')}</div>
+        <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" onClick={hideModal} />
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={renameNewChannel}>
@@ -75,4 +65,4 @@ const Rename = ({
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(Rename);
+export default connect(mapStateToProps)(Rename);

@@ -6,7 +6,6 @@ import { useSocket } from '../../hooks/index.jsx';
 import * as actions from '../actions.jsx';
 
 const actionCreators = {
-  removeChannel: actions.removeChannel,
   changeId: actions.changeId,
 };
 
@@ -26,25 +25,27 @@ const Remove = ({
   const removeNewChannel = async (e) => {
     e.preventDefault();
     hideModal();
-    changeId(1);
     const result = channels.filter(({ id }) => id === currentId);
     const { id } = result[0];
-    try {
-      apiSocket.removeChannel({ id });
-    } catch (err) {
-      if (err) {
-        throw err;
+    if (id === 1 || id === 2) {
+      throw new Error('This channel is not removable');
+    } else {
+      try {
+        apiSocket.removeChannel({ id });
+      } catch (err) {
+        if (err) {
+          throw err;
+        }
       }
     }
+    changeId(1);
   };
 
   return (
     <Modal show onHide={hideModal} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <div className="modal-title h4">{t('RemoveChannel')}</div>
-          <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" />
-        </Modal.Title>
+      <Modal.Header>
+        <div className="modal-title h4">{t('RemoveChannel')}</div>
+        <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" onClick={hideModal} />
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex justify-content-end">
