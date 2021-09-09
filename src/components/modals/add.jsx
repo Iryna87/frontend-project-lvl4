@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useSocket } from '../../hooks/index.jsx';
@@ -12,9 +13,8 @@ const mapStateToProps = (state) => {
   return props;
 };
 
-const Add = ({
-  hideModal, channels, t,
-}) => {
+const Add = ({ hideModal, channels }) => {
+  const t = useTranslation();
   const apiSocket = useSocket();
   const inputRef = useRef();
 
@@ -45,7 +45,7 @@ const Add = ({
   return (
     <Modal show onHide={hideModal} centered>
       <Modal.Header>
-        <div className="modal-title h4">{t('AddChannel')}</div>
+        <div className="modal-title h4">{t.t('AddChannel')}</div>
         <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" onClick={hideModal} />
       </Modal.Header>
       <Modal.Body>
@@ -53,10 +53,10 @@ const Add = ({
           <div className="form-group">
             <input name="name" data-testid="add-channel" className="mb-2 form-control" ref={inputRef} />
             <div className="invalid-feedback" />
-          </div>
-          <div className="d-flex justify-content-end">
-            <button type="submit" className="btn btn-primary">{t('Send')}</button>
-            <button type="button" className="me-2 btn btn-secondary" onClick={hideModal}>{t('Cancel')}</button>
+            <div className="d-flex justify-content-end">
+              <button type="button" className="me-2 btn btn-secondary" onClick={hideModal}>{t.t('Cancel')}</button>
+              <button type="submit" className="btn btn-primary">{t.t('Send')}</button>
+            </div>
           </div>
         </Form>
       </Modal.Body>

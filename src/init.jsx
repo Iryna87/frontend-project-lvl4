@@ -6,8 +6,11 @@ import 'regenerator-runtime/runtime.js';
 import '../assets/application.scss';
 import React, { useState } from 'react';
 import { Provider } from 'react-redux';
+import i18n from 'i18next';
+import { initReactI18next, I18nextProvider } from 'react-i18next';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { Provider as ProviderRollbar, ErrorBoundary } from '@rollbar/react';
+import locales from './locales/index.js';
 import { authContext, socketContext } from './contexts/index.jsx';
 import App from './components/App.jsx';
 import reducer from './components/reducers.jsx';
@@ -15,7 +18,19 @@ import {
   addChannel, removeChannel, addMessage, removeMessage, changeId, renameChannel,
 } from './components/actions.jsx';
 
+i18n
+  .use(initReactI18next)
+  .init({
+    lng: 'ru',
+    fallbackLng: 'ru',
+    resources: locales,
+    interpolation: {
+      escapeValue: false,
+    },
+  });
+
 const rollbarConfig = {
+  enabled: false,
   environment: process.env.NODE_ENV,
   accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
   captureUncaught: true,
@@ -129,11 +144,13 @@ export default async (socket) => {
     <ProviderRollbar config={rollbarConfig}>
       <ErrorBoundary>
         <Provider store={store}>
-          <AuthProvider>
-            <SocketProvider socket={socket}>
-              <App />
-            </SocketProvider>
-          </AuthProvider>
+          <I18nextProvider i18n={i18n}>
+            <AuthProvider>
+              <SocketProvider socket={socket}>
+                <App />
+              </SocketProvider>
+            </AuthProvider>
+          </I18nextProvider>
         </Provider>
       </ErrorBoundary>
     </ProviderRollbar>

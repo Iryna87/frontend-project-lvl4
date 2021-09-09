@@ -2,6 +2,7 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { useSocket } from '../../hooks/index.jsx';
 import * as actions from '../actions.jsx';
 
@@ -19,8 +20,9 @@ const mapStateToProps = (state) => {
 };
 
 const Remove = ({
-  hideModal, modalData, t, channels, currentId, changeId,
+  hideModal, modalData, channels, currentId, changeId,
 }) => {
+  const t = useTranslation();
   const apiSocket = useSocket();
   const removeNewChannel = async (e) => {
     e.preventDefault();
@@ -44,13 +46,13 @@ const Remove = ({
   return (
     <Modal show onHide={hideModal} centered>
       <Modal.Header>
-        <div className="modal-title h4">{t('RemoveChannel')}</div>
+        <div className="modal-title h4">{t.t('RemoveChannel')}</div>
         <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" onClick={hideModal} />
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex justify-content-end">
-          <button type="button" className="dropdown-item" disabled={!modalData} onClick={removeNewChannel}>{t('Remove')}</button>
-          <button type="button" className="dropdown-item" onClick={hideModal}>{t('Cancel')}</button>
+          <button type="button" className="dropdown-item" onClick={hideModal}>{t.t('Cancel')}</button>
+          <button type="button" className="dropdown-item" disabled={!modalData} onClick={removeNewChannel}>{t.t('Remove')}</button>
         </div>
       </Modal.Body>
     </Modal>

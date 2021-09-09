@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useSocket } from '../../hooks/index.jsx';
@@ -14,8 +15,9 @@ const mapStateToProps = (state) => {
 };
 
 const Rename = ({
-  hideModal, modalData, channels, t, currentId,
+  hideModal, modalData, channels, currentId,
 }) => {
+  const t = useTranslation();
   const apiSocket = useSocket();
   const inputRef = useRef();
 
@@ -46,7 +48,7 @@ const Rename = ({
   return (
     <Modal show onHide={hideModal} centered>
       <Modal.Header>
-        <div className="modal-title h4">{t('RenameChannel')}</div>
+        <div className="modal-title h4">{t.t('RenameChannel')}</div>
         <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" onClick={hideModal} />
       </Modal.Header>
       <Modal.Body>
@@ -56,8 +58,8 @@ const Rename = ({
             <div className="invalid-feedback" />
           </div>
           <div className="d-flex justify-content-end">
-            <button type="submit" className="btn btn-primary" disabled={!modalData}>{t('Rename')}</button>
-            <button type="button" className="me-2 btn btn-secondary" onClick={hideModal}>{t('Cancel')}</button>
+            <button type="button" className="me-2 btn btn-secondary" onClick={hideModal}>{t.t('Cancel')}</button>
+            <button type="submit" className="btn btn-primary" disabled={!modalData}>{t.t('Rename')}</button>
           </div>
         </Form>
       </Modal.Body>

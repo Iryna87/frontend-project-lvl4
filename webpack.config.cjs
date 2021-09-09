@@ -38,6 +38,10 @@ module.exports = {
         use: 'babel-loader',
       },
       {
+        test: /\.(png|jpg|jpeg)$/i,
+        type: 'asset/resource',
+      },
+      {
         test: /\.s[ac]ss$/i,
         use: [
           { loader: MiniCssExtractPlugin.loader },

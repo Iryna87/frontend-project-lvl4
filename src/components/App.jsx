@@ -6,10 +6,7 @@ import {
   Route,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import i18n from 'i18next';
-import { useTranslation, initReactI18next } from 'react-i18next';
 import { useAuth } from '../hooks/index.jsx';
-import locales from '../locales/index.js';
 import Login from './Login.jsx';
 import SignUp from './SignUp.jsx';
 import Home from './Home.jsx';
@@ -18,7 +15,7 @@ import NotFound from './NotFound.jsx';
 import getModal from './modals/index.js';
 import { fetchChannels } from './actions.jsx';
 
-const renderModal = (modalData, hideModal, t) => {
+const renderModal = (modalData, hideModal) => {
   if (!modalData.type) {
     return null;
   }
@@ -27,21 +24,9 @@ const renderModal = (modalData, hideModal, t) => {
     <Component
       modalData={modalData}
       hideModal={hideModal}
-      t={t}
     />
   );
 };
-
-i18n
-  .use(initReactI18next)
-  .init({
-    lng: 'ru',
-    fallbackLng: 'ru',
-    resources: locales,
-    interpolation: {
-      escapeValue: false,
-    },
-  });
 
 const PrivateRoute = ({ children, path }) => {
   const auth = useAuth();
@@ -60,8 +45,6 @@ const App = () => {
     dispatch(fetchChannels());
   }, [auth.userData?.username, dispatch]);
 
-  const { t } = useTranslation();
-
   const [modalData, setModalData] = useState({ type: null, channel: null });
   const showModal = (type, channel = null) => setModalData({ type, channel });
   const hideModal = () => setModalData({ type: null, channel: null });
@@ -78,14 +61,13 @@ const App = () => {
             <ComponentError />
           </Route>
           <Route path="/signup">
-            <SignUp t={t} />
+            <SignUp />
           </Route>
           <Route path="/login">
-            <Login t={t} />
+            <Login />
           </Route>
           <PrivateRoute path="/">
             <Home
-              t={t}
               addChannelModal={addChannelModal}
               removeChannelModal={removeChannelModal}
               renameChannelModal={renameChannelModal}
@@ -93,7 +75,7 @@ const App = () => {
           </PrivateRoute>
           <Route component={NotFound} />
         </Switch>
-        {renderModal(modalData, hideModal, t)}
+        {renderModal(modalData, hideModal)}
       </div>
     </Router>
   );
