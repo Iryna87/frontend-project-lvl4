@@ -34,7 +34,7 @@ const actionCreators = {
 const SignUp = ({ addUser }) => {
   const t = useTranslation();
   const Schema = Yup.object().shape({
-    username: Yup.string().required(t.t('validation_error')).min(3, t.t('Minimun3')).max(20, t.t('Maximum20')),
+    username: Yup.string().required(t.t('validation_error')).min(3, t.t('Between3and20')).max(20, t.t('Between3and20')),
     password: Yup.string().required(t.t('validation_error')).min(6, t.t('Minimun6')),
     confirmPassword: Yup.string().when('password', {
       is: (val) => (!!(val && val.length > 0)),

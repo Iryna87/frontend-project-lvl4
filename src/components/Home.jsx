@@ -29,24 +29,16 @@ const Home = ({
   currentId,
   messages,
   changeId,
-  state,
   addChannelModal,
   removeChannelModal,
   renameChannelModal,
 }) => {
-  console.log(state);
   const t = useTranslation();
   const auth = useAuth();
   const apiSocket = useSocket();
   const [showMode, handleShow] = useState(false);
   const showDropDown = () => handleShow(true);
   const hideDropDown = () => handleShow(false);
-
-  const channelAddRef = useRef();
-
-  useEffect(() => {
-    channelAddRef.current.focus();
-  }, [channels]);
 
   const inputRef = useRef();
 
