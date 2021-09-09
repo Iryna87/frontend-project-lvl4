@@ -131,6 +131,7 @@ const Home = ({
                   <span>{t.t('Channels')}</span>
                   <button type="button" className="p-0 text-primary btn btn-group-vertical" onClick={handleAdd}>
                     <PlusSquare width="17" height="17" />
+                    <span className="visually-hidden">+</span>
                   </button>
                 </div>
                 <ul className="nav flex-column nav-pills nav-fill px-2">
