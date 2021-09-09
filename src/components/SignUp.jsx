@@ -12,6 +12,7 @@ import { useFormik } from 'formik';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+import myImage from '../images/signUp.jpg';
 import * as actions from './actions.jsx';
 import { useAuth } from '../hooks/index.jsx';
 import routes from '../routes.js';
@@ -92,7 +93,7 @@ const SignUp = ({ addUser }) => {
             <div className="card shadow-sm">
               <div className="card-body d-flex flex-column flex-md-row justify-content-around align-items-center p-5">
                 <div>
-                  <img src="data:image" className="rounded-circle" alt="Регистрация" />
+                  <img src={myImage} className="rounded-circle" alt="Регистрация" />
                 </div>
                 <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
                   <h1 className="text-center mb-3">{t.t('Registration')}</h1>
