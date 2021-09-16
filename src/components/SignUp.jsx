@@ -13,9 +13,9 @@ import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import myImage from '../images/signUp.jpg';
-import * as actions from './actions.jsx';
 import { useAuth } from '../hooks/index.jsx';
 import routes from '../routes.js';
+import { addUser } from '../actions/actions.jsx';
 
 const mapStateToProps = (state) => {
   const props = {
@@ -27,12 +27,7 @@ const mapStateToProps = (state) => {
   return props;
 };
 
-const actionCreators = {
-  addUser: actions.addUser,
-  fetchChannels: actions.fetchChannels,
-};
-
-const SignUp = ({ addUser }) => {
+const SignUp = () => {
   const t = useTranslation();
   const Schema = Yup.object().shape({
     username: Yup.string().required(t.t('validation_error')).min(3, t.t('Between3and20')).max(20, t.t('Between3and20')),
@@ -153,4 +148,4 @@ const SignUp = ({ addUser }) => {
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(SignUp);
+export default connect(mapStateToProps)(SignUp);

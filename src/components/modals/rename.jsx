@@ -7,7 +7,6 @@ import { useSocket } from '../../hooks/index.jsx';
 
 const mapStateToProps = (state) => {
   const props = {
-    state,
     channels: state.channels,
     currentId: state.currentId,
   };
@@ -35,13 +34,7 @@ const Rename = ({
     if (differenses.length > 0) {
       throw new Error('This name alleready exists');
     } else {
-      try {
-        apiSocket.renameChannel({ id: currentId, name });
-      } catch (err) {
-        if (err) {
-          throw err;
-        }
-      }
+      await apiSocket.renameChannel({ id: currentId, name });
     }
   };
 

@@ -1,19 +1,20 @@
 import React, { useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useSocket } from '../../hooks/index.jsx';
+import { changeId } from '../../actions/actions.jsx';
 
 const mapStateToProps = (state) => {
   const props = {
-    state,
     channels: state.channels,
   };
   return props;
 };
 
-const Add = ({ hideModal, channels }) => {
+const Add = ({ hideModal }) => {
+  const dispatch = useDispatch();
   const t = useTranslation();
   const apiSocket = useSocket();
   const inputRef = useRef();
@@ -22,24 +23,12 @@ const Add = ({ hideModal, channels }) => {
     inputRef.current.focus();
   });
 
-  const names = channels?.map((channel) => channel.name);
-
   const addNewChannel = async (e) => {
     e.preventDefault();
     hideModal();
     const { name } = Object.fromEntries(new FormData(e.target));
-    const differenses = names.filter((item) => item === name);
-    if (differenses.length > 0 || name.length > 50) {
-      throw new Error('This name alleready exists or is too long');
-    } else {
-      try {
-        apiSocket.newChannel({ name });
-      } catch (err) {
-        if (err) {
-          throw err;
-        }
-      }
-    }
+    const result = await apiSocket.newChannel({ name });
+    dispatch(changeId(parseInt(result?.data?.id, 10)));
   };
 
   return (

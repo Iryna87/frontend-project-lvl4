@@ -13,10 +13,10 @@ import { Provider as ProviderRollbar, ErrorBoundary } from '@rollbar/react';
 import locales from './locales/index.js';
 import { authContext, socketContext } from './contexts/index.jsx';
 import App from './components/App.jsx';
-import reducer from './components/reducers.jsx';
+import reducer from './reducers/reducers.jsx';
 import {
-  addChannel, removeChannel, addMessage, removeMessage, changeId, renameChannel,
-} from './components/actions.jsx';
+  addChannel, removeChannel, addMessage, removeMessage, renameChannel,
+} from './actions/actions.jsx';
 
 i18n
   .use(initReactI18next)
@@ -71,34 +71,34 @@ const AuthProvider = ({ children }) => {
 
 const SocketProvider = ({ socket, children }) => (
   <socketContext.Provider value={{
-    newMessage: (data) => {
+    newMessage: (data) => new Promise((resolve) => {
       socket.emit(
         'newMessage',
         data,
-        () => {},
+        (response) => { resolve(response); },
       );
-    },
-    newChannel: (data) => {
+    }),
+    newChannel: (data) => new Promise((resolve) => {
       socket.emit(
         'newChannel',
         data,
-        () => {},
+        (response) => { resolve(response); },
       );
-    },
-    removeChannel: (data) => {
+    }),
+    removeChannel: (data) => new Promise((resolve) => {
       socket.emit(
         'removeChannel',
         data,
-        () => {},
+        (response) => { resolve(response); },
       );
-    },
-    renameChannel: (data) => {
+    }),
+    renameChannel: (data) => new Promise((resolve) => {
       socket.emit(
         'renameChannel',
         data,
-        () => {},
+        (response) => { resolve(response); },
       );
-    },
+    }),
   }}
   >
     { children }
@@ -107,25 +107,12 @@ const SocketProvider = ({ socket, children }) => (
 
 export default async (socket) => {
   socket.on('newChannel', async (channel) => {
-    await store.dispatch(addChannel(channel))
-      .catch(() => {
-        throw new Error();
-      });
-    await store.dispatch(changeId(parseInt(channel.id, 10)))
-      .catch(() => {
-        throw new Error();
-      });
+    await store.dispatch(addChannel(channel));
   });
 
   socket.on('removeChannel', async ({ id }) => {
-    await store.dispatch(removeChannel({ id }))
-      .catch(() => {
-        throw new Error();
-      });
-    await store.dispatch(removeMessage({ id }))
-      .catch(() => {
-        throw new Error();
-      });
+    await store.dispatch(removeChannel({ id }));
+    await store.dispatch(removeMessage({ id }));
   });
 
   socket.on('renameChannel', async ({ id, name }) => {
@@ -133,11 +120,7 @@ export default async (socket) => {
   });
 
   socket.on('newMessage', async (message) => {
-    try {
-      await store.dispatch(addMessage({ message }));
-    } catch (err) {
-      throw new Error();
-    }
+    await store.dispatch(addMessage({ message }));
   });
 
   return (

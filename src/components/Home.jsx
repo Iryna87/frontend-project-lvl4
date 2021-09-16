@@ -5,14 +5,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { PlusSquare, ArrowRightSquare } from 'react-bootstrap-icons';
 import { useAuth, useSocket } from '../hooks/index.jsx';
-import * as actions from './actions.jsx';
+import { changeId } from '../actions/actions.jsx';
 
 const mapStateToProps = (state) => {
   const props = {
-    state,
     channels: state.channels,
     currentId: state.currentId,
     messages: state.messages,
@@ -20,19 +19,15 @@ const mapStateToProps = (state) => {
   return props;
 };
 
-const actionCreators = {
-  changeId: actions.changeId,
-};
-
 const Home = ({
   channels,
   currentId,
   messages,
-  changeId,
   addChannelModal,
   removeChannelModal,
   renameChannelModal,
 }) => {
+  const dispatch = useDispatch();
   const t = useTranslation();
   const auth = useAuth();
   const apiSocket = useSocket();
@@ -58,16 +53,14 @@ const Home = ({
 
   const activeChannel = channels.find(({ id }) => id === currentId);
 
-  const addNewMessage = (e) => {
+  const addNewMessage = async (e) => {
     e.preventDefault();
     const obj = new FormData(e.target);
     const body = obj.get('body');
-    try {
-      apiSocket.newMessage({ body, channelId: currentId, name: activeChannel.name });
-    } catch (err) {
-      if (err) {
-        throw err;
-      }
+    if (body) {
+      await apiSocket.newMessage({ body, channelId: currentId, name: activeChannel.name });
+    } else {
+      throw new Error();
     }
     if (inputRef.current) {
       inputRef.current.focus();
@@ -75,18 +68,12 @@ const Home = ({
     }
   };
 
-  const changeCurrentId = async (e) => {
+  const changeCurrentId = (e) => {
     const { id } = e.target.dataset;
-    if (!id) {
-      throw new Error();
+    if (id) {
+      dispatch(changeId(parseInt(id, 10)));
     } else {
-      try {
-        await changeId(parseInt(id, 10));
-      } catch (err) {
-        if (err) {
-          throw err;
-        }
-      }
+      throw new Error();
     }
   };
 
@@ -207,4 +194,4 @@ const Home = ({
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(Home);
+export default connect(mapStateToProps)(Home);

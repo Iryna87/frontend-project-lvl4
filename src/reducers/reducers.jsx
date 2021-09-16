@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
-import * as actions from './actions.jsx';
+import * as actions from '../actions/actions.jsx';
 
 const channelsFetchingState = handleActions({
   [actions.fetchChannelsRequest]() {

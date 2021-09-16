@@ -1,18 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../../hooks/index.jsx';
-import * as actions from '../actions.jsx';
-
-const actionCreators = {
-  changeId: actions.changeId,
-};
+import { changeId } from '../../actions/actions.jsx';
 
 const mapStateToProps = (state) => {
   const props = {
-    state,
     channels: state.channels,
     currentId: state.currentId,
   };
@@ -20,8 +15,9 @@ const mapStateToProps = (state) => {
 };
 
 const Remove = ({
-  hideModal, modalData, channels, currentId, changeId,
+  hideModal, modalData, channels, currentId,
 }) => {
+  const dispatch = useDispatch();
   const t = useTranslation();
   const apiSocket = useSocket();
   const removeNewChannel = async (e) => {
@@ -32,15 +28,9 @@ const Remove = ({
     if (id === 1 || id === 2) {
       throw new Error('This channel is not removable');
     } else {
-      try {
-        apiSocket.removeChannel({ id });
-      } catch (err) {
-        if (err) {
-          throw err;
-        }
-      }
+      await apiSocket.removeChannel({ id });
+      dispatch(changeId(1));
     }
-    changeId(1);
   };
 
   return (
@@ -59,4 +49,4 @@ const Remove = ({
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(Remove);
+export default connect(mapStateToProps)(Remove);

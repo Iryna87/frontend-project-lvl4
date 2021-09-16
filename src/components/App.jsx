@@ -13,7 +13,7 @@ import Home from './Home.jsx';
 import ComponentError from './Component.jsx';
 import NotFound from './NotFound.jsx';
 import getModal from './modals/index.js';
-import { fetchChannels } from './actions.jsx';
+import { fetchChannels } from '../actions/actions.jsx';
 
 const renderModal = (modalData, hideModal) => {
   if (!modalData.type) {
