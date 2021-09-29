@@ -1,35 +1,29 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-import { connect, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../../hooks/index.jsx';
-import { changeId } from '../../actions/actions.jsx';
-
-const mapStateToProps = (state) => {
-  const props = {
-    channels: state.channels,
-    currentId: state.currentId,
-  };
-  return props;
-};
 
 const Remove = ({
-  hideModal, modalData, channels, currentId,
+  hideModal, modals,
 }) => {
-  const dispatch = useDispatch();
   const t = useTranslation();
+  const dispatch = useDispatch();
   const apiSocket = useSocket();
+
+  const channels = useSelector((state) => state.channels.channels);
+  const currentId = useSelector((state) => state.channels.currentChannelId);
+
   const removeNewChannel = async (e) => {
     e.preventDefault();
-    hideModal();
+    dispatch(hideModal());
     const result = channels.filter(({ id }) => id === currentId);
     const { id } = result[0];
     if (id === 1 || id === 2) {
       throw new Error('This channel is not removable');
     } else {
       await apiSocket.removeChannel({ id });
-      dispatch(changeId(1));
     }
   };
 
@@ -42,11 +36,11 @@ const Remove = ({
       <Modal.Body>
         <div className="d-flex justify-content-end">
           <button type="button" className="dropdown-item" onClick={hideModal}>{t.t('Cancel')}</button>
-          <button type="button" className="dropdown-item" disabled={!modalData} onClick={removeNewChannel}>{t.t('Remove')}</button>
+          <button type="button" className="dropdown-item" disabled={!modals} onClick={removeNewChannel}>{t.t('Remove')}</button>
         </div>
       </Modal.Body>
     </Modal>
   );
 };
 
-export default connect(mapStateToProps)(Remove);
+export default Remove;

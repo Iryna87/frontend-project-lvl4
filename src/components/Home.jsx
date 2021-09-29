@@ -5,28 +5,20 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { PlusSquare, ArrowRightSquare } from 'react-bootstrap-icons';
 import { useAuth, useSocket } from '../hooks/index.jsx';
-import { changeId } from '../actions/actions.jsx';
-
-const mapStateToProps = (state) => {
-  const props = {
-    channels: state.channels,
-    currentId: state.currentId,
-    messages: state.messages,
-  };
-  return props;
-};
+import { actions } from '../slices/index.js';
 
 const Home = ({
-  channels,
-  currentId,
-  messages,
   addChannelModal,
   removeChannelModal,
   renameChannelModal,
 }) => {
+  const channels = useSelector((state) => state.channels.channels);
+  const currentId = useSelector((state) => state.channels.currentChannelId);
+  const messages = useSelector((state) => state.messages.messages);
+
   const dispatch = useDispatch();
   const t = useTranslation();
   const auth = useAuth();
@@ -51,7 +43,7 @@ const Home = ({
     scrollToBottom();
   }, [messages]);
 
-  const activeChannel = channels.find(({ id }) => id === currentId);
+  const activeChannel = channels?.find(({ id }) => id === currentId);
 
   const addNewMessage = async (e) => {
     e.preventDefault();
@@ -71,7 +63,7 @@ const Home = ({
   const changeCurrentId = (e) => {
     const { id } = e.target.dataset;
     if (id) {
-      dispatch(changeId(parseInt(id, 10)));
+      dispatch(actions.changeCurrentChannelId({ id }));
     } else {
       throw new Error();
     }
@@ -82,15 +74,15 @@ const Home = ({
   );
   const handleRemove = () => {
     hideDropDown();
-    removeChannelModal(activeChannel.id);
+    removeChannelModal({ channel: activeChannel.id });
   };
   const handleRename = () => {
     hideDropDown();
-    renameChannelModal(activeChannel.id, activeChannel.name);
+    renameChannelModal({ channel: activeChannel.id, name: activeChannel.name });
   };
-  const handleAdd = (name) => {
+  const handleAdd = () => {
     hideDropDown();
-    addChannelModal(name);
+    addChannelModal();
   };
 
   const handleDropDown = async (e) => {
@@ -98,7 +90,7 @@ const Home = ({
     await showDropDown();
   };
 
-  const currentNameArr = Array.isArray(channels) ? channels?.filter((channel) => channel.id === currentId) : '';
+  const currentNameArr = channels?.filter((channel) => channel.id === currentId);
   const msgLengthArr = messages?.filter((message) => message.channelId === currentId);
 
   return (
@@ -146,11 +138,11 @@ const Home = ({
                       <b>
                         #
                         {' '}
-                        {currentNameArr.length === 0 ? '' : currentNameArr[0].name}
+                        {currentNameArr.length !== 0 ? currentNameArr[0].name : ''}
                       </b>
                     </p>
                     <span className="text-muted">
-                      {msgLengthArr.length === 0 ? 0 : msgLengthArr.length}
+                      {msgLengthArr.length !== 0 ? msgLengthArr.length : ''}
                       {' '}
                       сообщений
                     </span>
@@ -194,4 +186,4 @@ const Home = ({
   );
 };
 
-export default connect(mapStateToProps)(Home);
+export default Home;

@@ -1,6 +1,6 @@
+/* eslint-disable functional/no-let */
 /* eslint-disable max-len */
 // @ts-check
-
 import 'core-js/stable/index.js';
 import 'regenerator-runtime/runtime.js';
 import '../assets/application.scss';
@@ -13,10 +13,7 @@ import { Provider as ProviderRollbar, ErrorBoundary } from '@rollbar/react';
 import locales from './locales/index.js';
 import { authContext, socketContext } from './contexts/index.jsx';
 import App from './components/App.jsx';
-import reducer from './reducers/reducers.jsx';
-import {
-  addChannel, removeChannel, addMessage, removeMessage, renameChannel,
-} from './actions/actions.jsx';
+import reducer, { actions } from './slices/index.js';
 
 i18n
   .use(initReactI18next)
@@ -69,36 +66,31 @@ const AuthProvider = ({ children }) => {
   );
 };
 
+const makeSocketApiMethod = (fn) => (...args) => new Promise((resolve, reject) => {
+  let state = 'pending';
+
+  setTimeout(() => {
+    if (state === 'pending') {
+      state = 'rejected';
+      reject();
+    }
+  }, 10000);
+
+  const ack = (response) => {
+    if (state === 'pending') {
+      state = 'resolved';
+      resolve(response);
+    }
+  };
+  fn(...args, ack);
+});
+
 const SocketProvider = ({ socket, children }) => (
   <socketContext.Provider value={{
-    newMessage: (data) => new Promise((resolve) => {
-      socket.emit(
-        'newMessage',
-        data,
-        (response) => { resolve(response); },
-      );
-    }),
-    newChannel: (data) => new Promise((resolve) => {
-      socket.emit(
-        'newChannel',
-        data,
-        (response) => { resolve(response); },
-      );
-    }),
-    removeChannel: (data) => new Promise((resolve) => {
-      socket.emit(
-        'removeChannel',
-        data,
-        (response) => { resolve(response); },
-      );
-    }),
-    renameChannel: (data) => new Promise((resolve) => {
-      socket.emit(
-        'renameChannel',
-        data,
-        (response) => { resolve(response); },
-      );
-    }),
+    newMessage: makeSocketApiMethod((...args) => socket.emit('newMessage', ...args)),
+    newChannel: makeSocketApiMethod((...args) => socket.emit('newChannel', ...args)),
+    removeChannel: makeSocketApiMethod((...args) => socket.emit('removeChannel', ...args)),
+    renameChannel: makeSocketApiMethod((...args) => socket.emit('renameChannel', ...args)),
   }}
   >
     { children }
@@ -106,21 +98,20 @@ const SocketProvider = ({ socket, children }) => (
 );
 
 export default async (socket) => {
-  socket.on('newChannel', async (channel) => {
-    await store.dispatch(addChannel(channel));
+  socket.on('newChannel', (channel) => {
+    store.dispatch(actions.addChannel({ channel }));
   });
 
-  socket.on('removeChannel', async ({ id }) => {
-    await store.dispatch(removeChannel({ id }));
-    await store.dispatch(removeMessage({ id }));
+  socket.on('removeChannel', ({ id }) => {
+    store.dispatch(actions.removeChannel({ id }));
   });
 
-  socket.on('renameChannel', async ({ id, name }) => {
-    await store.dispatch(renameChannel({ id, name }));
+  socket.on('renameChannel', ({ id, name }) => {
+    store.dispatch(actions.renameChannel({ id, name }));
   });
 
-  socket.on('newMessage', async (message) => {
-    await store.dispatch(addMessage({ message }));
+  socket.on('newMessage', (message) => {
+    store.dispatch(actions.addMessage({ message }));
   });
 
   return (

@@ -9,23 +9,11 @@ import {
   useHistory,
 } from 'react-router-dom';
 import { useFormik } from 'formik';
-import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import myImage from '../images/signUp.jpg';
 import { useAuth } from '../hooks/index.jsx';
 import routes from '../routes.js';
-import { addUser } from '../actions/actions.jsx';
-
-const mapStateToProps = (state) => {
-  const props = {
-    state,
-    channels: state.channels,
-    currentId: state.currentId,
-    messages: state.messages,
-  };
-  return props;
-};
 
 const SignUp = () => {
   const t = useTranslation();
@@ -60,8 +48,6 @@ const SignUp = () => {
       setError(null);
       try {
         const res = await axios.post(routes.signUpPath(), values);
-        const body = res.config.data;
-        await addUser({ body });
         localStorage.setItem('userId', JSON.stringify(res.data));
         auth.logIn();
         const { from } = location.state || { from: { pathname: '/' } };
@@ -148,4 +134,4 @@ const SignUp = () => {
   );
 };
 
-export default connect(mapStateToProps)(SignUp);
+export default SignUp;

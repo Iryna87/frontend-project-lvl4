@@ -1,23 +1,16 @@
 import React, { useRef, useEffect } from 'react';
-import { connect, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useSocket } from '../../hooks/index.jsx';
-import { changeId } from '../../actions/actions.jsx';
-
-const mapStateToProps = (state) => {
-  const props = {
-    channels: state.channels,
-  };
-  return props;
-};
+import { actions } from '../../slices/index.js';
 
 const Add = ({ hideModal }) => {
-  const dispatch = useDispatch();
   const t = useTranslation();
   const apiSocket = useSocket();
   const inputRef = useRef();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     inputRef.current.focus();
@@ -25,10 +18,11 @@ const Add = ({ hideModal }) => {
 
   const addNewChannel = async (e) => {
     e.preventDefault();
-    hideModal();
+    dispatch(actions.hideModal());
     const { name } = Object.fromEntries(new FormData(e.target));
     const result = await apiSocket.newChannel({ name });
-    dispatch(changeId(parseInt(result?.data?.id, 10)));
+    const { id } = result.data;
+    dispatch(actions.changeCurrentChannelId({ id }));
   };
 
   return (
@@ -54,4 +48,4 @@ const Add = ({ hideModal }) => {
   );
 };
 
-export default connect(mapStateToProps)(Add);
+export default Add;
