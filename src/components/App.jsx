@@ -60,11 +60,12 @@ const App = () => {
       const response = await axios.get(routes.dataPath(), { headers: getAuthHeader() });
       dispatch(actions.initialize({ data: response.data }));
     } catch (err) {
-      if (err.isAxiosError && err.response.status === 401) {
-        // history.push(routes.loginPagePath());
-      } else {
-        throw err;
-      }
+      // if (err.isAxiosError && err.response.status === 401) {
+      //  history.push(routes.loginPagePath());
+      // } else {
+      //   throw err;
+      // }
+      console.log(err);
     }
   }, [auth.userData?.username, dispatch]);
 
