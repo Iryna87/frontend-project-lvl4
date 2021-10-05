@@ -1,21 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
+import { Modal, Form, Button } from 'react-bootstrap';
 import { useSocket } from '../../hooks/index.jsx';
-import { getChannels, getCurrentChannelId } from '../../selectors.js';
+import { getModalExtraData, getChannelById } from '../../selectors.js';
 
-const Rename = ({
-  hideModal, modals,
-}) => {
+const Rename = ({ hideModal }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const apiSocket = useSocket();
   const inputRef = useRef();
-  const dispatch = useDispatch();
-
-  const channels = useSelector(getChannels);
-  const currentId = useSelector(getCurrentChannelId);
+  const [loading, setLoading] = useState(false);
+  const channelId = useSelector(getModalExtraData);
+  const channel = useSelector(getChannelById(channelId));
 
   useEffect(() => {
     inputRef.current.select();
@@ -23,14 +20,18 @@ const Rename = ({
 
   const renameChannel = async (e) => {
     e.preventDefault();
-    dispatch(hideModal());
     const { name } = Object.fromEntries(new FormData(e.target));
-    const names = channels?.map((channel) => channel.name);
-    const differenses = names.filter((item) => item === name);
-    if (differenses.length > 0) {
+    if (name === channel.name) {
       throw new Error(t('ThisNameAlreadyExists'));
-    } else {
-      await apiSocket.renameChannel({ id: currentId, name });
+    }
+    try {
+      setLoading(true);
+      console.log(channelId, channel, name);
+      await apiSocket.renameChannel({ id: channelId, name });
+      dispatch(hideModal());
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
     }
   };
 
@@ -43,8 +44,8 @@ const Rename = ({
             <div className="invalid-feedback" />
           </div>
           <div className="d-flex justify-content-end">
-            <button type="button" className="me-2 btn btn-secondary" onClick={hideModal}>{t('Cancel')}</button>
-            <button type="submit" className="btn btn-primary" disabled={!modals}>{t('Rename')}</button>
+            <Button type="button" className="me-2" variant="secondary" onClick={hideModal}>{t('Cancel')}</Button>
+            <Button type="submit" variant="primary" disabled={loading}>{t('Rename')}</Button>
           </div>
         </Form>
       </Modal.Body>

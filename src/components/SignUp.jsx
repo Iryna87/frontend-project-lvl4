@@ -4,7 +4,6 @@ import axios from 'axios';
 import React, { useRef, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import {
-  Link,
   useLocation,
   useHistory,
 } from 'react-router-dom';
@@ -14,6 +13,7 @@ import * as Yup from 'yup';
 import myImage from '../images/signUp.jpg';
 import { useAuth } from '../hooks/index.jsx';
 import routes from '../routes.js';
+import Header from './Header.jsx';
 
 const SignUp = () => {
   const { t } = useTranslation();
@@ -64,9 +64,7 @@ const SignUp = () => {
 
   return (
     <>
-      <div className="container">
-        <Link to="/" className="navbar-brand">Hexlet Chat</Link>
-      </div>
+      <Header />
       <div className="container-fluid h-100">
         <div className="row justify-content-center align-content-center h-100">
           <div className="col-12 col-md-8 col-xxl-6">

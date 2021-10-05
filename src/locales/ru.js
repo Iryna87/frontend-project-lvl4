@@ -29,7 +29,10 @@ const ru = {
     ThisNameAlreadyExists: 'Это имя уже существует',
     ThisСhannelIsNotRemovable: 'Этот канал нельзя удалять',
     UnrecognizedError: 'Неизвестная ошибка',
-
+    nMessages_zero: '{{count}} сообщений',
+    nMessages_one: '{{count}} сообщение',
+    nMessages_few: '{{count}} сообщения',
+    nMessages_many: '{{count}} сообщений',
   },
 };
 

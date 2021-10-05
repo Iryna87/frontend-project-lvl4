@@ -1,33 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../hooks/index.jsx';
 import routes from '../routes.js';
 import { actions } from '../slices/index.js';
-import {
-  getChannels, getMessages, getCurrentChannelId, getCurrentChannel, getCurrentChannelMessages,
-} from '../selectors.js';
-import HeaderHome from './HeaderHome.jsx';
-import ChannelsHome from './ChannelsHome.jsx';
-import Chat from './ChatHome.jsx';
+import Header from './Header.jsx';
+import Channels from './Channels.jsx';
+import Chat from './Chat.jsx';
 
-const Home = ({
-  addChannelModal,
-  removeChannelModal,
-  renameChannelModal,
-}) => {
-  const channels = useSelector(getChannels);
-  const currentId = useSelector(getCurrentChannelId);
-  const messages = useSelector(getMessages);
-  const currentChannel = useSelector(getCurrentChannel);
-  const currentChannelMessages = useSelector(getCurrentChannelMessages);
-
+const Home = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   const history = useHistory();
-
   const [loading, setLoading] = useState(false);
 
   useEffect(async () => {
@@ -58,24 +44,12 @@ const Home = ({
     <>
       <div className="h-100" id="chat">
         <div className="d-flex flex-column h-100">
-          <HeaderHome />
+          <Header />
           <div className="container h-100 my-4 overflow-hidden rounded shadow">
             {loading ? spinner : (
               <div className="row h-100 bg-white flex-md-row">
-                <ChannelsHome
-                  addChannelModal={addChannelModal}
-                  removeChannelModal={removeChannelModal}
-                  renameChannelModal={renameChannelModal}
-                  channels={channels}
-                  currentId={currentId}
-                />
-                <Chat
-                  currentChannel={currentChannel}
-                  currentChannelMessages={currentChannelMessages}
-                  channels={channels}
-                  messages={messages}
-                  currentId={currentId}
-                />
+                <Channels />
+                <Chat />
               </div>
             )}
           </div>

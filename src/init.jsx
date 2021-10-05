@@ -34,15 +34,15 @@ const store = configureStore({
 });
 
 const AuthProvider = ({ children }) => {
-  const isUserLogged = !!localStorage.userId;
+  const isUserLogged = !!localStorage.userData;
   const [loggedIn, setLoggedIn] = useState(isUserLogged);
 
   const logIn = (data) => {
-    localStorage.setItem('userId', JSON.stringify(data));
+    localStorage.setItem('userData', JSON.stringify(data));
     setLoggedIn(true);
   };
   const logOut = () => {
-    localStorage.removeItem('userId');
+    localStorage.removeItem('userData');
     setLoggedIn(false);
   };
 
@@ -51,7 +51,7 @@ const AuthProvider = ({ children }) => {
       loggedIn,
       logIn,
       logOut,
-      userData: localStorage.userId ? JSON.parse(localStorage.userId) : null,
+      userData: localStorage.userData ? JSON.parse(localStorage.userData) : null,
     }}
     >
       {children}

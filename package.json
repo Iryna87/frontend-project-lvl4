@@ -36,7 +36,7 @@
     "fastify-static": "^4.0.1",
     "formik": "^2.2.9",
     "http-errors": "^1.8.0",
-    "i18next": "^20.3.5",
+    "i18next": "^21.2.4",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
     "pino-pretty": "^4.8.0",

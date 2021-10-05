@@ -1,6 +1,10 @@
 import React, { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { getCurrentChannelMessages, getCurrentChannelId } from '../selectors.js';
 
-const MessagesListChat = ({ currentId, messages }) => {
+const MessagesList = () => {
+  const currentChannelMessages = useSelector(getCurrentChannelMessages);
+  const currentId = useSelector(getCurrentChannelId);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -9,12 +13,12 @@ const MessagesListChat = ({ currentId, messages }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [currentChannelMessages]);
 
   return (
     <>
       <div id="messages-box" className="chat-messages overflow-auto px-5 ">
-        {messages?.map((message) => (
+        {currentChannelMessages?.map((message) => (
           message.channelId === currentId ? (
             <div key={message.id} className="text-break mb-2">
               <b>{message.name}</b>
@@ -30,4 +34,4 @@ const MessagesListChat = ({ currentId, messages }) => {
   );
 };
 
-export default MessagesListChat;
+export default MessagesList;

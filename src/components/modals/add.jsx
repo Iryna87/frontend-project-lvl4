@@ -1,16 +1,16 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { useSocket } from '../../hooks/index.jsx';
 import { actions } from '../../slices/index.js';
 
-const Add = ({ modals, hideModal }) => {
+const Add = ({ hideModal }) => {
   const { t } = useTranslation();
   const apiSocket = useSocket();
   const inputRef = useRef();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     inputRef.current.focus();
@@ -18,25 +18,29 @@ const Add = ({ modals, hideModal }) => {
 
   const addChannel = async (e) => {
     e.preventDefault();
-    dispatch(actions.hideModal());
     const { name } = Object.fromEntries(new FormData(e.target));
-    const result = await apiSocket.newChannel({ name });
-    const { id } = result.data;
-    dispatch(actions.changeCurrentChannelId({ id }));
+    try {
+      setLoading(true);
+      const result = await apiSocket.newChannel({ name });
+      const { id } = result.data;
+      dispatch(actions.changeCurrentChannelId({ id }));
+      dispatch(actions.hideModal());
+    } catch {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <Modal.Body>
         <Form onSubmit={addChannel}>
-          <div className="form-group">
-            <input name="name" data-testid="add-channel" className="mb-2 form-control" ref={inputRef} />
-            <div className="invalid-feedback" />
+          <Form.Group>
+            <Form.Control type="text" name="name" data-testid="add-channel" className="mb-2" ref={inputRef} />
             <div className="d-flex justify-content-end">
-              <button type="button" className="me-2 btn btn-secondary" onClick={hideModal}>{t('Cancel')}</button>
-              <button type="submit" className="btn btn-primary" disabled={!modals}>{t('Send')}</button>
+              <Button type="button" className="me-2" variant="secondary" onClick={hideModal}>{t('Cancel')}</Button>
+              <Button type="submit" variant="primary" disabled={loading}>{t('Send')}</Button>
             </div>
-          </div>
+          </Form.Group>
         </Form>
       </Modal.Body>
     </>

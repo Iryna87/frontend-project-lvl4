@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/index.jsx';
 import myImage from '../images/login.jpg';
 import routes from '../routes.js';
+import Header from './Header.jsx';
 
 export default () => {
   const { t } = useTranslation();
@@ -53,9 +54,7 @@ export default () => {
   });
   return (
     <>
-      <div className="container">
-        <Link to="/" className="navbar-brand">Hexlet Chat</Link>
-      </div>
+      <Header />
       <div className="row justify-content-center pt-5">
         <div className="col-12 col-md-8 col-xxl-6">
           <div className="card shadow-sm">

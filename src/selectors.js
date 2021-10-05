@@ -10,6 +10,12 @@ export const getCurrentChannel = (state) => state.channels.channels.filter(
   (channel) => channel.id === state.channels.currentChannelId,
 );
 
+export const getChannelById = (id) => (state) => state.channels.channels.filter(
+  (channel) => channel.id === id,
+);
+
 export const getCurrentChannelMessages = (state) => state.messages.messages.filter(
   (msg) => msg.channelId === state.channels.currentChannelId,
 );
+
+export const getModalExtraData = (state) => state.modals.extraData;

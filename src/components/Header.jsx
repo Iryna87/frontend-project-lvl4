@@ -4,9 +4,10 @@ import { Nav, Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/index.jsx';
 
-const HeaderHome = () => {
+const Header = () => {
   const { t } = useTranslation();
   const auth = useAuth();
+
   const handleCloseButton = () => (
     auth.loggedIn ? auth.logOut() : <Button as={Link} to="/login">Log in</Button>
   );
@@ -23,4 +24,4 @@ const HeaderHome = () => {
   );
 };
 
-export default HeaderHome;
+export default Header;
