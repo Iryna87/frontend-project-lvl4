@@ -17,11 +17,13 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(async () => {
+    // eslint-disable-next-line functional/no-let
+    let mounted = true;
     try {
       setLoading(true);
       const authHeader = auth.userData?.token ? { Authorization: `Bearer ${auth.userData.token}` } : {};
       const response = await axios.get(routes.dataPath(), { headers: authHeader });
-      setLoading(false);
+      if (mounted === true) setLoading(false);
       dispatch(actions.initialize({ data: response.data }));
     } catch (err) {
       if (err.isAxiosError && err.response.status === 401) {
@@ -30,6 +32,9 @@ const Home = () => {
         throw err;
       }
     }
+    return () => {
+      mounted = false;
+    };
   }, [auth.userData?.username, dispatch]);
 
   const spinner = (
