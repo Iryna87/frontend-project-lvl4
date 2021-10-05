@@ -22,8 +22,7 @@ const Home = () => {
     (async () => {
       try {
         setLoading(true);
-        const authHeader = auth.userData?.token ? { Authorization: `Bearer ${auth.userData.token}` } : {};
-        const response = await axios.get(routes.dataPath(), { headers: authHeader });
+        const response = await axios.get(routes.dataPath(), { headers: auth.getAuthHeader() });
         if (mounted === true) setLoading(false);
         dispatch(actions.initialize({ data: response.data }));
       } catch (err) {
@@ -38,7 +37,7 @@ const Home = () => {
     return () => {
       mounted = false;
     };
-  }, [auth.userData?.username, dispatch]);
+  }, [auth, history, dispatch]);
 
   const spinner = (
     <div className="h-100 d-flex align-items-center justify-content-center">

@@ -40,7 +40,9 @@ const App = () => (
         <PrivateRoute path={routes.homePagePath()}>
           <Home />
         </PrivateRoute>
-        <Route component={NotFound} />
+        <Route>
+          <NotFound />
+        </Route>
       </Switch>
       <ModalComponent />
     </div>
