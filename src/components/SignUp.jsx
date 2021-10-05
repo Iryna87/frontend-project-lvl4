@@ -16,10 +16,10 @@ import { useAuth } from '../hooks/index.jsx';
 import routes from '../routes.js';
 
 const SignUp = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const Schema = Yup.object().shape({
-    username: Yup.string().required(t.t('validation_error')).min(3, t.t('Between3and20')).max(20, t.t('Between3and20')),
-    password: Yup.string().required(t.t('validation_error')).min(6, t.t('Minimun6')),
+    username: Yup.string().required(t('validation_error')).min(3, t('Between3and20')).max(20, t('Between3and20')),
+    password: Yup.string().required(t('validation_error')).min(6, t('Minimun6')),
     confirmPassword: Yup.string().when('password', {
       is: (val) => (!!(val && val.length > 0)),
       then: Yup.string().oneOf(
@@ -48,16 +48,15 @@ const SignUp = () => {
       setError(null);
       try {
         const res = await axios.post(routes.signUpPath(), values);
-        localStorage.setItem('userId', JSON.stringify(res.data));
-        auth.logIn();
+        auth.logIn(res.data);
         const { from } = location.state || { from: { pathname: '/' } };
         history.replace(from);
       } catch (err) {
         if (err.isAxiosError && err.response.status === 409) {
-          setError(t('This user aleready exists'));
+          setError(t('ThisUserAlreadyExists'));
           inputRef.current.select();
         } else {
-          setError(t('Unrecognized error'));
+          setError(t('UnrecognizedError'));
         }
       }
     },
@@ -77,20 +76,20 @@ const SignUp = () => {
                   <img src={myImage} className="rounded-circle" alt="Регистрация" />
                 </div>
                 <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
-                  <h1 className="text-center mb-3">{t.t('Registration')}</h1>
+                  <h1 className="text-center mb-3">{t('Registration')}</h1>
                   <Form.Group className="form-floating mb-3">
                     <Form.Control
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.username}
-                      placeholder={t.t('usernameReg')}
+                      placeholder={t('usernameReg')}
                       name="username"
                       id="username"
                       autoComplete="username"
                       isInvalid={!!error || (!!formik.errors.username && formik.touched.username)}
                       ref={inputRef}
                     />
-                    <Form.Label htmlFor="username">{t.t('usernameReg')}</Form.Label>
+                    <Form.Label htmlFor="username">{t('usernameReg')}</Form.Label>
                     <Form.Control.Feedback type="invalid">{error || formik.errors.username}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="form-floating mb-3">
@@ -99,13 +98,13 @@ const SignUp = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.password}
-                      placeholder={t.t('password')}
+                      placeholder={t('password')}
                       name="password"
                       id="password"
                       autoComplete="current-password"
                       isInvalid={formik.errors.password && formik.touched.password}
                     />
-                    <Form.Label htmlFor="password">{t.t('password')}</Form.Label>
+                    <Form.Label htmlFor="password">{t('password')}</Form.Label>
                     <Form.Control.Feedback type="invalid">{formik.errors.password}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="form-floating mb-4">
@@ -114,16 +113,16 @@ const SignUp = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.confirmPassword}
-                      placeholder={t.t('confirmPassword')}
+                      placeholder={t('confirmPassword')}
                       name="confirmPassword"
                       id="confirmPassword"
                       autoComplete="confirmPassword"
                       isInvalid={formik.values.password !== formik.values.confirmPassword && formik.touched.confirmPassword}
                     />
-                    <Form.Label htmlFor="confirmPassword">{t.t('confirmPassword')}</Form.Label>
-                    <Form.Control.Feedback type="invalid">{t.t('PasswordEquility')}</Form.Control.Feedback>
+                    <Form.Label htmlFor="confirmPassword">{t('confirmPassword')}</Form.Label>
+                    <Form.Control.Feedback type="invalid">{t('PasswordEquility')}</Form.Control.Feedback>
                   </Form.Group>
-                  <Button className="w-100 btn btn-outline-primary" type="submit" variant="outline-primary">{t.t('Registration1')}</Button>
+                  <Button className="w-100 btn btn-outline-primary" type="submit" variant="outline-primary">{t('Registration1')}</Button>
                 </Form>
               </div>
             </div>

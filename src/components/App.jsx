@@ -1,35 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Redirect,
   BrowserRouter as Router,
   Switch,
   Route,
-  // useHistory,
 } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
 import { useAuth } from '../hooks/index.jsx';
 import Login from './Login.jsx';
 import SignUp from './SignUp.jsx';
 import Home from './Home.jsx';
 import ComponentError from './Component.jsx';
 import NotFound from './NotFound.jsx';
-import getModal from './modals/index.js';
+import ModalComponent from './Modal.jsx';
 import routes from '../routes.js';
 import { actions } from '../slices/index.js';
-
-const renderModal = (modals, hideModal) => {
-  if (!modals.type) {
-    return null;
-  }
-  const Component = getModal(modals.type);
-  return (
-    <Component
-      modals={modals}
-      hideModal={hideModal}
-    />
-  );
-};
 
 const PrivateRoute = ({ children, path }) => {
   const auth = useAuth();
@@ -43,36 +28,9 @@ const PrivateRoute = ({ children, path }) => {
 
 const App = () => {
   const dispatch = useDispatch();
-  const modals = useSelector((state) => state.modals.modals);
-  const auth = useAuth();
-  // const history = useHistory();
-
-  const getAuthHeader = () => {
-    const userId = JSON.parse(localStorage.getItem('userId'));
-    if (userId && userId.token) {
-      return { Authorization: `Bearer ${userId.token}` };
-    }
-    return {};
-  };
-
-  useEffect(async () => {
-    try {
-      const response = await axios.get(routes.dataPath(), { headers: getAuthHeader() });
-      dispatch(actions.initialize({ data: response.data }));
-    } catch (err) {
-      // if (err.isAxiosError && err.response.status === 401) {
-      //  history.push(routes.loginPagePath());
-      // } else {
-      //   throw err;
-      // }
-      console.log(err);
-    }
-  }, [auth.userData?.username, dispatch]);
-
   const addChannelModal = () => dispatch(actions.showModal({ type: 'adding' }));
-  const removeChannelModal = (id) => dispatch(actions.showModal({ type: 'removing', channel: id }));
-  const renameChannelModal = (id, name) => dispatch(actions.showModal({ type: 'renaming', channel: id, name }));
-  const hideModal = () => dispatch(actions.hideModal({}));
+  const removeChannelModal = (id) => dispatch(actions.showModal({ type: 'removing', extraData: id }));
+  const renameChannelModal = () => dispatch(actions.showModal({ type: 'renaming' }));
 
   return (
     <Router>
@@ -92,12 +50,11 @@ const App = () => {
               addChannelModal={addChannelModal}
               removeChannelModal={removeChannelModal}
               renameChannelModal={renameChannelModal}
-              hideModal={hideModal}
             />
           </PrivateRoute>
           <Route component={NotFound} />
         </Switch>
-        {renderModal(modals, hideModal)}
+        <ModalComponent />
       </div>
     </Router>
   );

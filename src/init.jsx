@@ -1,5 +1,3 @@
-/* eslint-disable functional/no-let */
-/* eslint-disable max-len */
 // @ts-check
 import 'core-js/stable/index.js';
 import 'regenerator-runtime/runtime.js';
@@ -14,17 +12,6 @@ import locales from './locales/index.js';
 import { authContext, socketContext } from './contexts/index.jsx';
 import App from './components/App.jsx';
 import reducer, { actions } from './slices/index.js';
-
-i18n
-  .use(initReactI18next)
-  .init({
-    lng: 'ru',
-    fallbackLng: 'ru',
-    resources: locales,
-    interpolation: {
-      escapeValue: false,
-    },
-  });
 
 const rollbarConfig = {
   enabled: false,
@@ -47,10 +34,13 @@ const store = configureStore({
 });
 
 const AuthProvider = ({ children }) => {
-  const tokenStorage = !!localStorage.userId;
-  const [loggedIn, setLoggedIn] = useState(tokenStorage);
+  const isUserLogged = !!localStorage.userId;
+  const [loggedIn, setLoggedIn] = useState(isUserLogged);
 
-  const logIn = () => setLoggedIn(true);
+  const logIn = (data) => {
+    localStorage.setItem('userId', JSON.stringify(data));
+    setLoggedIn(true);
+  };
   const logOut = () => {
     localStorage.removeItem('userId');
     setLoggedIn(false);
@@ -58,7 +48,10 @@ const AuthProvider = ({ children }) => {
 
   return (
     <authContext.Provider value={{
-      loggedIn, logIn, logOut, userData: localStorage.userId ? JSON.parse(localStorage.userId) : null,
+      loggedIn,
+      logIn,
+      logOut,
+      userData: localStorage.userId ? JSON.parse(localStorage.userId) : null,
     }}
     >
       {children}
@@ -67,6 +60,7 @@ const AuthProvider = ({ children }) => {
 };
 
 const makeSocketApiMethod = (fn) => (...args) => new Promise((resolve, reject) => {
+  // eslint-disable-next-line functional/no-let
   let state = 'pending';
 
   setTimeout(() => {
@@ -98,6 +92,18 @@ const SocketProvider = ({ socket, children }) => (
 );
 
 export default async (socket) => {
+  const newInstance = i18n.createInstance();
+  await newInstance
+    .use(initReactI18next)
+    .init({
+      lng: 'ru',
+      fallbackLng: 'ru',
+      resources: locales,
+      interpolation: {
+        escapeValue: false,
+      },
+    });
+
   socket.on('newChannel', (channel) => {
     store.dispatch(actions.addChannel({ channel }));
   });
@@ -118,7 +124,7 @@ export default async (socket) => {
     <ProviderRollbar config={rollbarConfig}>
       <ErrorBoundary>
         <Provider store={store}>
-          <I18nextProvider i18n={i18n}>
+          <I18nextProvider i18n={newInstance}>
             <AuthProvider>
               <SocketProvider socket={socket}>
                 <App />

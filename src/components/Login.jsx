@@ -14,10 +14,10 @@ import myImage from '../images/login.jpg';
 import routes from '../routes.js';
 
 export default () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const Schema = Yup.object().shape({
-    username: Yup.string().required(t.t('validation_error')),
-    password: Yup.string().required(t.t('validation_error')),
+    username: Yup.string().required(t('validation_error')),
+    password: Yup.string().required(t('validation_error')),
   });
   const auth = useAuth();
   const [authFailed, setAuthFailed] = useState(false);
@@ -38,8 +38,7 @@ export default () => {
       setAuthFailed(false);
       try {
         const res = await axios.post(routes.loginPath(), values);
-        localStorage.setItem('userId', JSON.stringify(res.data));
-        auth.logIn();
+        auth.logIn(res.data);
         const { from } = location.state || { from: { pathname: '/' } };
         history.replace(from);
       } catch (err) {
@@ -65,20 +64,20 @@ export default () => {
                 <img src={myImage} className="rounded-circle" alt="Войти" />
               </div>
               <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
-                <h1 className="text-center mb-4">{t.t('Enter')}</h1>
+                <h1 className="text-center mb-4">{t('Enter')}</h1>
                 <Form.Group className="form-floating mb-3 form-group">
                   <Form.Control
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.username}
-                    placeholder={t.t('username')}
+                    placeholder={t('username')}
                     name="username"
                     id="username"
                     autoComplete="username"
                     isInvalid={authFailed || (formik.errors.username && formik.touched.username)}
                     ref={inputRef}
                   />
-                  <Form.Label htmlFor="username">{t.t('username')}</Form.Label>
+                  <Form.Label htmlFor="username">{t('username')}</Form.Label>
                   <Form.Control.Feedback type="invalid">{formik.errors.username}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="form-floating mb-4 form-group">
@@ -87,17 +86,17 @@ export default () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.password}
-                    placeholder={t.t('password')}
+                    placeholder={t('password')}
                     name="password"
                     id="password"
                     autoComplete="current-password"
                     isInvalid={authFailed || (formik.errors.password && formik.touched.password)}
                   />
-                  <Form.Label htmlFor="password">{t.t('password')}</Form.Label>
+                  <Form.Label htmlFor="password">{t('password')}</Form.Label>
                   <Form.Control.Feedback type="invalid">{formik.errors.password}</Form.Control.Feedback>
-                  {authFailed ? <Form.Control.Feedback type="invalid">{t.t('Incorrect')}</Form.Control.Feedback> : '' }
+                  {authFailed ? <Form.Control.Feedback type="invalid">{t('Incorrect')}</Form.Control.Feedback> : '' }
                 </Form.Group>
-                <Button className="w-100 mb-3 btn btn-outline-primary" type="submit" variant="outline-primary">{t.t('Enter')}</Button>
+                <Button className="w-100 mb-3 btn btn-outline-primary" type="submit" variant="outline-primary">{t('Enter')}</Button>
               </Form>
             </div>
           </div>
@@ -105,7 +104,7 @@ export default () => {
             <div className="text-center">
               <span>Нет аккаунта?</span>
               {' '}
-              <Link to="/signup">{t.t('Registration')}</Link>
+              <Link to="/signup">{t('Registration')}</Link>
             </div>
           </div>
         </div>
