@@ -18,11 +18,7 @@ const Channels = () => {
 
   const changeCurrentId = (e) => {
     const { id } = e.target.dataset;
-    if (id) {
-      dispatch(actions.changeCurrentChannelId({ id }));
-    } else {
-      throw new Error();
-    }
+    dispatch(actions.changeCurrentChannelId({ id }));
   };
 
   const makeHandleRemove = (channelId) => () => removeChannelModal(channelId);
@@ -61,8 +57,8 @@ const Channels = () => {
                     />
                   ) : ''}
                 <Dropdown.Menu>
-                  <Button type="button" data-id={id} className="dropdown-item" onClick={makeHandleRename(id)}>{t('Rename')}</Button>
-                  <Button type="button" className="dropdown-item" onClick={makeHandleRemove(id)}>{t('Remove')}</Button>
+                  <Dropdown.Item href="#" onClick={makeHandleRename(id)}>{t('Rename')}</Dropdown.Item>
+                  <Dropdown.Item href="#" onClick={makeHandleRemove(id)}>{t('Remove')}</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </li>

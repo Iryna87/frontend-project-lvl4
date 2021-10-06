@@ -1,12 +1,7 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import axios from 'axios';
-import React, { useRef, useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Form } from 'react-bootstrap';
-import {
-  useLocation,
-  useHistory,
-} from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
@@ -29,34 +24,29 @@ const SignUp = () => {
     }),
   });
   const auth = useAuth();
-  const [error, setError] = useState(null);
-  const inputRef = useRef();
   const location = useLocation();
   const history = useHistory();
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
   const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
       confirmPassword: '',
+      errors: '',
     },
     validationSchema: Schema,
     validateOnBlur: true,
     onSubmit: async (values) => {
-      setError(null);
+      formik.values.errors = '';
       try {
-        const res = await axios.post(routes.signUpPath(), values);
-        auth.logIn(res.data);
+        const result = await axios.post(routes.signUpPath(), values);
+        auth.logIn(result.data);
         const { from } = location.state || { from: { pathname: '/' } };
         history.replace(from);
       } catch (err) {
         if (err.isAxiosError && err.response.status === 409) {
-          setError(t('ThisUserAlreadyExists'));
-          inputRef.current.select();
+          formik.values.errors = t('ThisUserAlreadyExists');
         } else {
-          setError(t('UnrecognizedError'));
+          formik.values.errors = t('UnrecognizedError');
         }
       }
     },
@@ -84,11 +74,15 @@ const SignUp = () => {
                       name="username"
                       id="username"
                       autoComplete="username"
-                      isInvalid={!!error || (!!formik.errors.username && formik.touched.username)}
-                      ref={inputRef}
+                      isInvalid={!!formik.values.errors
+                      || (!!formik.errors.username && formik.touched.username)}
+                      autoFocus
                     />
                     <Form.Label htmlFor="username">{t('usernameReg')}</Form.Label>
-                    <Form.Control.Feedback type="invalid">{error || formik.errors.username}</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">
+                      {formik.values.errors
+                    || formik.errors.username}
+                    </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="form-floating mb-3">
                     <Form.Control
@@ -115,7 +109,8 @@ const SignUp = () => {
                       name="confirmPassword"
                       id="confirmPassword"
                       autoComplete="confirmPassword"
-                      isInvalid={formik.values.password !== formik.values.confirmPassword && formik.touched.confirmPassword}
+                      isInvalid={formik.values.password !== formik.values.confirmPassword
+                      && formik.touched.confirmPassword}
                     />
                     <Form.Label htmlFor="confirmPassword">{t('confirmPassword')}</Form.Label>
                     <Form.Control.Feedback type="invalid">{t('PasswordEquility')}</Form.Control.Feedback>

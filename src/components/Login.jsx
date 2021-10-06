@@ -1,11 +1,7 @@
 import axios from 'axios';
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import { Button, Form } from 'react-bootstrap';
-import {
-  Link,
-  useLocation,
-  useHistory,
-} from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
@@ -21,31 +17,26 @@ export default () => {
     password: Yup.string().required(t('validation_error')),
   });
   const auth = useAuth();
-  const [authFailed, setAuthFailed] = useState(false);
-  const inputRef = useRef();
   const location = useLocation();
   const history = useHistory();
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
   const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
+      errors: false,
     },
     validationSchema: Schema,
     validateOnBlur: true,
     onSubmit: async (values) => {
-      setAuthFailed(false);
+      formik.values.errors = false;
       try {
-        const res = await axios.post(routes.loginPath(), values);
-        auth.logIn(res.data);
+        const result = await axios.post(routes.loginPath(), values);
+        auth.logIn(result.data);
         const { from } = location.state || { from: { pathname: '/' } };
         history.replace(from);
       } catch (err) {
         if (err.isAxiosError && err.response.status === 401) {
-          setAuthFailed(true);
-          inputRef.current.select();
+          formik.values.errors = true;
           return;
         }
         throw err;
@@ -73,8 +64,9 @@ export default () => {
                     name="username"
                     id="username"
                     autoComplete="username"
-                    isInvalid={authFailed || (formik.errors.username && formik.touched.username)}
-                    ref={inputRef}
+                    isInvalid={formik.values.errors
+                    || (formik.errors.username && formik.touched.username)}
+                    autoFocus
                   />
                   <Form.Label htmlFor="username">{t('username')}</Form.Label>
                   <Form.Control.Feedback type="invalid">{formik.errors.username}</Form.Control.Feedback>
@@ -89,11 +81,12 @@ export default () => {
                     name="password"
                     id="password"
                     autoComplete="current-password"
-                    isInvalid={authFailed || (formik.errors.password && formik.touched.password)}
+                    isInvalid={formik.values.errors
+                    || (formik.errors.password && formik.touched.password)}
                   />
                   <Form.Label htmlFor="password">{t('password')}</Form.Label>
                   <Form.Control.Feedback type="invalid">{formik.errors.password}</Form.Control.Feedback>
-                  {authFailed ? <Form.Control.Feedback type="invalid">{t('Incorrect')}</Form.Control.Feedback> : '' }
+                  {formik.values.errors ? <Form.Control.Feedback type="invalid">{t('Incorrect')}</Form.Control.Feedback> : '' }
                 </Form.Group>
                 <Button className="w-100 mb-3 btn btn-outline-primary" type="submit" variant="outline-primary">{t('Enter')}</Button>
               </Form>

@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { useFormik } from 'formik';
 import { Form, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -9,48 +10,45 @@ import { getCurrentChannelId } from '../selectors.js';
 const MessageForm = () => {
   const { t } = useTranslation();
   const apiSocket = useSocket();
-  const inputRef = useRef();
-
   const auth = useAuth();
-
+  const inputRef = useRef();
   const currentId = useSelector(getCurrentChannelId);
-
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     inputRef.current.focus();
   }, [currentId]);
 
-  const addMessage = async (e) => {
-    e.preventDefault();
-    const obj = new FormData(e.target);
-    const body = obj.get('body');
-    if (body) {
-      setLoading(true);
+  const formik = useFormik({
+    initialValues: {
+      body: '',
+    },
+    onSubmit: async (values, { resetForm }) => {
+      const { body } = values;
       await apiSocket.newMessage({ body, channelId: currentId, name: auth.userData?.username });
-      setLoading(false);
-    }
-    if (inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.value = '';
-    }
-  };
-
+      resetForm({ body: '' });
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    },
+  });
   return (
     <>
-      <Form noValidate="" className="py-1 border rounded-2" autoComplete="off" onSubmit={addMessage}>
-        <Form.Group>
-          <div className="input-group has-validation">
-            <input name="body" data-testid="new-message" className="border-0 p-0 ps-2 form-control" placeholder={t('EnterMessage')} ref={inputRef} />
-            <div className="input-group-append">
-              <Button type="submit" variant="" disabled={!!loading}>
-                <ArrowRightSquare width="20" height="20" />
-                <span className="visually-hidden">{t('Send')}</span>
-              </Button>
-            </div>
-          </div>
+      <Form className="py-1 border rounded-2" autoComplete="off" onSubmit={formik.handleSubmit}>
+        <Form.Group className="input-group">
+          <Form.Control
+            onChange={formik.handleChange}
+            value={formik.values.body}
+            placeholder={t('EnterMessage')}
+            name="body"
+            data-testid="new-message"
+            className="border-0 p-0 ps-2"
+            ref={inputRef}
+          />
+          <Button type="submit" className="input group append btn-group-vertical" variant="" disabled={formik.isSubmitting}>
+            <ArrowRightSquare width="20" height="20" />
+            <span className="visually-hidden">{t('Send')}</span>
+          </Button>
         </Form.Group>
-        <Form.Control.Feedback type="invalid" />
       </Form>
     </>
   );

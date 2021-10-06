@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Modal from 'react-bootstrap/Modal';
+import { Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { getModals } from '../selectors.js';
 import { actions } from '../slices/index.js';
@@ -19,13 +19,10 @@ const ModalComponent = () => {
   return (
     <Modal show onHide={hideModal} centered>
       <Modal.Header>
-        <div className="modal-title h4">{t(modals.type)}</div>
+        <div className="modal-title h4">{t(`modals.${modals.type}.title`)}</div>
         <button aria-label="Close" data-bs-dismiss="modal" type="button" className="btn btn-close" onClick={hideModal} />
       </Modal.Header>
-      <Component
-        modals={modals}
-        hideModal={hideModal}
-      />
+      <Component hideModal={hideModal} />
     </Modal>
   );
 };

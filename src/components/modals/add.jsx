@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Modal, Button, Form } from 'react-bootstrap';
@@ -10,35 +11,39 @@ const Add = ({ hideModal }) => {
   const apiSocket = useSocket();
   const inputRef = useRef();
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     inputRef.current.focus();
   }, []);
 
-  const addChannel = async (e) => {
-    e.preventDefault();
-    const { name } = Object.fromEntries(new FormData(e.target));
-    try {
-      setLoading(true);
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+    },
+    onSubmit: async (values) => {
+      const { name } = values;
       const result = await apiSocket.newChannel({ name });
       const { id } = result.data;
       dispatch(actions.changeCurrentChannelId({ id }));
-      dispatch(actions.hideModal());
-    } catch {
-      setLoading(false);
-    }
-  };
-
+      hideModal();
+    },
+  });
   return (
     <>
       <Modal.Body>
-        <Form onSubmit={addChannel}>
+        <Form autoComplete="off" onSubmit={formik.handleSubmit}>
           <Form.Group>
-            <Form.Control type="text" name="name" data-testid="add-channel" className="mb-2" ref={inputRef} />
+            <Form.Control
+              onChange={formik.handleChange}
+              value={formik.values.name}
+              name="name"
+              data-testid="add-channel"
+              className="mb-2"
+              ref={inputRef}
+            />
             <div className="d-flex justify-content-end">
               <Button type="button" className="me-2" variant="secondary" onClick={hideModal}>{t('Cancel')}</Button>
-              <Button type="submit" variant="primary" disabled={loading}>{t('Send')}</Button>
+              <Button type="submit" variant="primary" disabled={formik.isSubmitting}>{t('Send')}</Button>
             </div>
           </Form.Group>
         </Form>

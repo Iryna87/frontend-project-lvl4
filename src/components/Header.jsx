@@ -8,16 +8,18 @@ const Header = () => {
   const { t } = useTranslation();
   const auth = useAuth();
 
-  const handleCloseButton = () => (
-    auth.loggedIn ? auth.logOut() : <Button as={Link} to="/login">Log in</Button>
-  );
-
   return (
     <>
       <Nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
         <div className="container">
-          <Link to="/" className="navbar-brand">Hexlet Chat</Link>
-          <Button type="button" onClick={handleCloseButton} className="btn btn-primary">{t('Exit')}</Button>
+          {auth.loggedIn ? (
+            <>
+              <Link to="/" className="navbar-brand">Hexlet Chat</Link>
+              <Button type="button" onClick={auth.logOut} className="btn btn-primary">{t('Exit')}</Button>
+            </>
+          )
+            : <Link to="/" className="navbar-brand">Hexlet Chat</Link>}
+
         </div>
       </Nav>
     </>
