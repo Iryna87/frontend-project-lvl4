@@ -6,24 +6,29 @@ import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import myImage from '../images/signUp.jpg';
-import { useAuth } from '../hooks/index.jsx';
+import { useAuth } from '../hooks';
 import routes from '../routes.js';
 import Header from './Header.jsx';
 
 const SignUp = () => {
   const { t } = useTranslation();
   const Schema = Yup.object().shape({
-    username: Yup.string().required(t('validation_error')).min(3, t('Between3and20')).max(20, t('Between3and20')),
-    password: Yup.string().required(t('validation_error')).min(6, t('Minimun6')),
+    username: Yup.string()
+      .required(t('validation.Required'))
+      .min(3, t('validation.Between3and20'))
+      .max(20, t('validation.Between3and20')),
+    password: Yup.string()
+      .required(t('validation.Required'))
+      .min(6, t('validation.Minimun6')),
     confirmPassword: Yup.string().when('password', {
       is: (val) => (!!(val && val.length > 0)),
       then: Yup.string().oneOf(
         [Yup.ref('password')],
-        'Both password need to be the same',
+        t('validation.PasswordEquality'),
       ),
     }),
   });
-  const auth = useAuth();
+  const { logIn } = useAuth();
   const location = useLocation();
   const history = useHistory();
   const formik = useFormik({
@@ -39,14 +44,14 @@ const SignUp = () => {
       formik.values.errors = '';
       try {
         const result = await axios.post(routes.signUpPath(), values);
-        auth.logIn(result.data);
+        logIn(result.data);
         const { from } = location.state || { from: { pathname: '/' } };
         history.replace(from);
       } catch (err) {
         if (err.isAxiosError && err.response.status === 409) {
-          formik.values.errors = t('ThisUserAlreadyExists');
+          formik.values.errors = t('errors.ThisUserAlreadyExists');
         } else {
-          formik.values.errors = t('UnrecognizedError');
+          formik.values.errors = t('errors.UnrecognizedError');
         }
       }
     },
@@ -64,13 +69,13 @@ const SignUp = () => {
                   <img src={myImage} className="rounded-circle" alt="Регистрация" />
                 </div>
                 <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
-                  <h1 className="text-center mb-3">{t('Registration')}</h1>
+                  <h1 className="text-center mb-3">{t('signup.Registration')}</h1>
                   <Form.Group className="form-floating mb-3">
                     <Form.Control
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.username}
-                      placeholder={t('usernameReg')}
+                      placeholder={t('signup.username')}
                       name="username"
                       id="username"
                       autoComplete="username"
@@ -78,7 +83,7 @@ const SignUp = () => {
                       || (!!formik.errors.username && formik.touched.username)}
                       autoFocus
                     />
-                    <Form.Label htmlFor="username">{t('usernameReg')}</Form.Label>
+                    <Form.Label htmlFor="username">{t('signup.username')}</Form.Label>
                     <Form.Control.Feedback type="invalid">
                       {formik.values.errors
                     || formik.errors.username}
@@ -90,13 +95,13 @@ const SignUp = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.password}
-                      placeholder={t('password')}
+                      placeholder={t('signup.password')}
                       name="password"
                       id="password"
                       autoComplete="current-password"
                       isInvalid={formik.errors.password && formik.touched.password}
                     />
-                    <Form.Label htmlFor="password">{t('password')}</Form.Label>
+                    <Form.Label htmlFor="password">{t('signup.password')}</Form.Label>
                     <Form.Control.Feedback type="invalid">{formik.errors.password}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="form-floating mb-4">
@@ -105,17 +110,17 @@ const SignUp = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.confirmPassword}
-                      placeholder={t('confirmPassword')}
+                      placeholder={t('signup.confirmPassword')}
                       name="confirmPassword"
                       id="confirmPassword"
                       autoComplete="confirmPassword"
                       isInvalid={formik.values.password !== formik.values.confirmPassword
                       && formik.touched.confirmPassword}
                     />
-                    <Form.Label htmlFor="confirmPassword">{t('confirmPassword')}</Form.Label>
-                    <Form.Control.Feedback type="invalid">{t('PasswordEquility')}</Form.Control.Feedback>
+                    <Form.Label htmlFor="confirmPassword">{t('signup.confirmPassword')}</Form.Label>
+                    <Form.Control.Feedback type="invalid">{formik.errors.confirmPassword}</Form.Control.Feedback>
                   </Form.Group>
-                  <Button className="w-100 btn btn-outline-primary" type="submit" variant="outline-primary">{t('Registration1')}</Button>
+                  <Button className="w-100 btn btn-outline-primary" type="submit" variant="outline-primary">{t('signup.submit')}</Button>
                 </Form>
               </div>
             </div>

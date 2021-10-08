@@ -1,5 +1,7 @@
 export const getChannels = (state) => state.channels.channels;
 
+export const getChannelNames = (state) => getChannels(state).map(({ name }) => name);
+
 export const getCurrentChannelId = (state) => state.channels.currentChannelId;
 
 export const getMessages = (state) => state.messages.messages;

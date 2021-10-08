@@ -3,7 +3,7 @@ import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { useSocket } from '../../hooks/index.jsx';
+import { useSocket, useChannelValidationSchema } from '../../hooks';
 import { actions } from '../../slices/index.js';
 
 const Add = ({ hideModal }) => {
@@ -11,6 +11,7 @@ const Add = ({ hideModal }) => {
   const apiSocket = useSocket();
   const inputRef = useRef();
   const dispatch = useDispatch();
+  const validationSchema = useChannelValidationSchema();
 
   useEffect(() => {
     inputRef.current.focus();
@@ -20,6 +21,7 @@ const Add = ({ hideModal }) => {
     initialValues: {
       name: '',
     },
+    validationSchema,
     onSubmit: async (values) => {
       const { name } = values;
       const result = await apiSocket.newChannel({ name });
@@ -40,11 +42,13 @@ const Add = ({ hideModal }) => {
               data-testid="add-channel"
               className="mb-2"
               ref={inputRef}
+              isInvalid={formik.errors.name}
             />
             <div className="d-flex justify-content-end">
               <Button type="button" className="me-2" variant="secondary" onClick={hideModal}>{t('Cancel')}</Button>
               <Button type="submit" variant="primary" disabled={formik.isSubmitting}>{t('Send')}</Button>
             </div>
+            <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
           </Form.Group>
         </Form>
       </Modal.Body>

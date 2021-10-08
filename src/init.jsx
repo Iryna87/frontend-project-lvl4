@@ -9,7 +9,7 @@ import { initReactI18next, I18nextProvider } from 'react-i18next';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { Provider as ProviderRollbar, ErrorBoundary } from '@rollbar/react';
 import locales from './locales/index.js';
-import { authContext, socketContext } from './contexts/index.jsx';
+import { authContext, socketContext } from './contexts';
 import App from './components/App.jsx';
 import reducer, { actions } from './slices/index.js';
 

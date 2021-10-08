@@ -3,7 +3,7 @@ import { Spinner } from 'react-bootstrap';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { useAuth } from '../hooks/index.jsx';
+import { useAuth } from '../hooks';
 import routes from '../routes.js';
 import { actions } from '../slices/index.js';
 import Header from './Header.jsx';

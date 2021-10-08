@@ -6,7 +6,7 @@ const NotFound = () => {
   return (
     <div>
       404(
-      {t('NotFound')}
+      {t('errors.NotFound')}
     </div>
   );
 };

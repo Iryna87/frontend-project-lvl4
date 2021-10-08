@@ -1,8 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies */
 // @ts-check
 
 const path = require('path');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { DefinePlugin } = require('webpack');
 
@@ -36,6 +34,9 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: 'babel-loader',
+        resolve: {
+          fullySpecified: false,
+        },
       },
       {
         test: /\.(png|jpg|jpeg)$/i,

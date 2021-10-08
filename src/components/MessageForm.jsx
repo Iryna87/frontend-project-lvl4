@@ -1,10 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import { useFormik } from 'formik';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, InputGroup } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import * as Yup from 'yup';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
-import { useSocket, useAuth } from '../hooks/index.jsx';
+import { useSocket, useAuth } from '../hooks';
 import { getCurrentChannelId } from '../selectors.js';
 
 const MessageForm = () => {
@@ -22,6 +23,9 @@ const MessageForm = () => {
     initialValues: {
       body: '',
     },
+    validationSchema: Yup.object().shape({
+      body: Yup.string().required(t('validation.Required')),
+    }),
     onSubmit: async (values, { resetForm }) => {
       const { body } = values;
       await apiSocket.newMessage({ body, channelId: currentId, name: auth.userData?.username });
@@ -44,10 +48,12 @@ const MessageForm = () => {
             className="border-0 p-0 ps-2"
             ref={inputRef}
           />
-          <Button type="submit" className="input group append btn-group-vertical" variant="" disabled={formik.isSubmitting}>
-            <ArrowRightSquare width="20" height="20" />
-            <span className="visually-hidden">{t('Send')}</span>
-          </Button>
+          <InputGroup.Append>
+            <Button type="submit" variant="group-vertical" disabled={formik.isSubmitting || !formik.isValid}>
+              <ArrowRightSquare size={20} />
+              <span className="visually-hidden">{t('Send')}</span>
+            </Button>
+          </InputGroup.Append>
         </Form.Group>
       </Form>
     </>

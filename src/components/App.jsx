@@ -5,7 +5,7 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-import { useAuth } from '../hooks/index.jsx';
+import { useAuth } from '../hooks';
 import Login from './Login.jsx';
 import SignUp from './SignUp.jsx';
 import Home from './Home.jsx';
@@ -15,11 +15,11 @@ import ModalComponent from './Modal.jsx';
 import routes from '../routes.js';
 
 const PrivateRoute = ({ children, path }) => {
-  const auth = useAuth();
+  const { loggedIn } = useAuth();
   return (
     <Route
       path={path}
-      render={() => (auth.loggedIn ? children : <Redirect to={{ pathname: '/login' }} />)}
+      render={() => (loggedIn ? children : <Redirect to={{ pathname: '/login' }} />)}
     />
   );
 };

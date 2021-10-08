@@ -5,7 +5,7 @@ import { Link, useLocation, useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../hooks/index.jsx';
+import { useAuth } from '../hooks';
 import myImage from '../images/login.jpg';
 import routes from '../routes.js';
 import Header from './Header.jsx';
@@ -13,10 +13,10 @@ import Header from './Header.jsx';
 export default () => {
   const { t } = useTranslation();
   const Schema = Yup.object().shape({
-    username: Yup.string().required(t('validation_error')),
-    password: Yup.string().required(t('validation_error')),
+    username: Yup.string().required(t('validation.Required')),
+    password: Yup.string().required(t('validation.Required')),
   });
-  const auth = useAuth();
+  const { logIn } = useAuth();
   const location = useLocation();
   const history = useHistory();
   const formik = useFormik({
@@ -31,7 +31,7 @@ export default () => {
       formik.values.errors = false;
       try {
         const result = await axios.post(routes.loginPath(), values);
-        auth.logIn(result.data);
+        logIn(result.data);
         const { from } = location.state || { from: { pathname: '/' } };
         history.replace(from);
       } catch (err) {
@@ -60,7 +60,7 @@ export default () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.username}
-                    placeholder={t('username')}
+                    placeholder={t('signup.username')}
                     name="username"
                     id="username"
                     autoComplete="username"
@@ -77,16 +77,16 @@ export default () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.password}
-                    placeholder={t('password')}
+                    placeholder={t('signup.password')}
                     name="password"
                     id="password"
                     autoComplete="current-password"
                     isInvalid={formik.values.errors
                     || (formik.errors.password && formik.touched.password)}
                   />
-                  <Form.Label htmlFor="password">{t('password')}</Form.Label>
+                  <Form.Label htmlFor="password">{t('signup.password')}</Form.Label>
                   <Form.Control.Feedback type="invalid">{formik.errors.password}</Form.Control.Feedback>
-                  {formik.values.errors ? <Form.Control.Feedback type="invalid">{t('Incorrect')}</Form.Control.Feedback> : '' }
+                  {formik.values.errors ? <Form.Control.Feedback type="invalid">{t('validation.Incorrect')}</Form.Control.Feedback> : '' }
                 </Form.Group>
                 <Button className="w-100 mb-3 btn btn-outline-primary" type="submit" variant="outline-primary">{t('Enter')}</Button>
               </Form>
