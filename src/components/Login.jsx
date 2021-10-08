@@ -96,7 +96,7 @@ export default () => {
             <div className="text-center">
               <span>Нет аккаунта?</span>
               {' '}
-              <Link to="/signup">{t('Registration')}</Link>
+              <Link to="/signup">{t('signup.Registration')}</Link>
             </div>
           </div>
         </div>
